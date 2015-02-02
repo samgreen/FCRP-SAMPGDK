@@ -1,0 +1,54 @@
+#pragma once
+#include <string>
+#include "Point.h"
+
+using namespace std;
+
+class House
+{
+public:
+	House();
+	~House();
+
+	int GetID();
+	int GetPickupID();
+
+	string GetDescription();
+	void SetDescription(string desc);
+
+	int GetType();
+	int GetOwnerID();
+	int GetPrice();
+	int GetInterior();
+	float GetExitHeading();
+
+	int GetVehicleID();
+	Point3D GetVehiclePosition();
+	float GetVehicleHeading();
+	int GetVehicleColor(int index);
+
+	Point3D GetEntrancePosition();
+	Point3D GetInteriorEntrancePosition();
+
+private:
+	int id;
+	int pickupID;
+
+	string description;
+		
+	int type;
+	int owner;
+	int price;
+	int interior;
+	float exitHeading;
+
+	int vehicleID;
+	Point3D vehiclePosition;
+	float vehicleHeading;
+	int vehicleColor1;
+	int vehicleColor2;
+
+	Point3D entrancePosition;
+	Point3D interiorEntrancePosition;
+};
+
