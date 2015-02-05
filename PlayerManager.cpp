@@ -1,10 +1,21 @@
 #include "PlayerManager.h"
 #include "Player.h"
 
+#include <fstream>
+#include <cereal/archives/json.hpp>
+
 using namespace std;
 
 unordered_map<int, Player *> PlayerManager::playerMap;
 unordered_map<string, Player*> PlayerManager::playerNameMap;
+
+void PlayerManager::SavePlayer(Player *player)
+{
+	string savePath = "data/" + player->GetName() + ".json";
+	std::ofstream os(savePath);
+	cereal::JSONOutputArchive archive(os); 
+	archive(*player);
+}
 
 Player* PlayerManager::GetPlayer(int playerID)
 {

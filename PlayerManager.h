@@ -22,6 +22,8 @@ public:
 	static void AddPlayer(Player *player);
 	static void RemovePlayer(Player *player);	
 
+	static void SavePlayer(Player *player);
+
 private:
 	PlayerManager();
 	~PlayerManager();

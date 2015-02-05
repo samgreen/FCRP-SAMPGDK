@@ -1,11 +1,20 @@
 #pragma once
 
 #include <string>
+
 #include "Point.h"
+
+#include <cereal/archives/json.hpp>
 
 class Player
 {
 public:
+	template <class Archive>
+	void serialize(Archive &archive)
+	{
+		archive(GetName(), level, experience, money, skin, adminLevel);
+	}
+
 	Player();
 	Player(int id);
 	~Player();
@@ -89,6 +98,7 @@ public:
 
 protected:
 	int id;
+	std::string name;
 	int level;
 	int adminLevel;
 	int skin;

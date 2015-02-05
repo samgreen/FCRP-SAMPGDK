@@ -19,9 +19,10 @@ Player::~Player()
 
 string Player::GetName()
 {
-	char name[MAX_PLAYER_NAME];
-	GetPlayerName(id, name, sizeof(name));
-	return string(name);
+	char nameChar[MAX_PLAYER_NAME];
+	GetPlayerName(id, nameChar, sizeof(nameChar));
+	name = string(nameChar);
+	return name;
 }
 
 bool Player::HasValidName()

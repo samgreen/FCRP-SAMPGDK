@@ -72,6 +72,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 	Player *player = PlayerManager::GetPlayer(playerid);
+	PlayerManager::SavePlayer(player);
 
 	string message = player->GetName() + " has left the server.";
 	SendClientMessageToAll(COLOR_GOLD, message.c_str());
