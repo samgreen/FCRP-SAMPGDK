@@ -2,8 +2,6 @@
 #include <string>
 #include "Point.h"
 
-using namespace std;
-
 class House
 {
 public:
@@ -13,8 +11,8 @@ public:
 	int GetID();
 	int GetPickupID();
 
-	string GetDescription();
-	void SetDescription(string desc);
+	std::string GetDescription();
+	void SetDescription(std::string desc);
 
 	int GetType();
 	int GetOwnerID();
@@ -34,7 +32,7 @@ private:
 	int id;
 	int pickupID;
 
-	string description;
+	std::string description;
 		
 	int type;
 	int owner;

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "Point.h"
-
-using namespace std;
 
 typedef enum {
 	JobTypeNone,
@@ -26,13 +24,13 @@ public:
 	static int GetContractTime(Player *player);
 
 	static Point3D GetPoint(JobType type);
-	static string GetName(JobType type);
+	static std::string GetName(JobType type);
 
 private:
 	JobManager();
 	~JobManager();
 
-	static map<int, JobType> playerJobTypeMap;
-	static map<int, int> playerJobContractTimeMap;
+	static std::unordered_map<int, JobType> playerJobTypeMap;
+	static std::unordered_map<int, int> playerJobContractTimeMap;
 };
 

@@ -1,9 +1,7 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "Player.h"
-
-using namespace std;
 
 typedef enum {
 	PlayerFactionCivilian,
@@ -33,6 +31,7 @@ class FactionManager
 {
 public:
 	static void AddPlayer(Player *player, PlayerFaction faction);
+	static void AddLeader(Player *player, PlayerFaction faction);
 	static void RemovePlayer(Player *player);
 
 	static int GetDefaultSkin(PlayerFaction faction);
@@ -41,15 +40,16 @@ public:
 	static PlayerFaction GetFaction(Player *player);
 
 	static int GetRank(Player *player);
+	static void SetRank(Player *player, int rank);
 
-	static string GetName(PlayerFaction faction);
+	static std::string GetName(PlayerFaction faction);
 	static PlayerFactionType GetType(PlayerFaction faction);
 
 private:
 	FactionManager();
 	~FactionManager();
 
-	static map<int, PlayerFaction> playerFactionMap;
-	static map<int, int> playerFactionRankMap;
+	static std::unordered_map<int, PlayerFaction> playerFactionMap;
+	static std::unordered_map<int, int> playerFactionRankMap;
 };
 

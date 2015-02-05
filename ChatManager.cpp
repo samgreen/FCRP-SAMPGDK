@@ -21,22 +21,17 @@ static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
 
  void ChatManager::SystemMessage(Player *player, string message)
 {
-	SystemMessage(player->GetID(), message.c_str());
+	SendClientMessage(player->GetID(), COLOR_GRAD1, message.c_str());
 }
 
- void ChatManager::SystemMessage(int playerID, const char *message)
-{
-	SendClientMessage(playerID, COLOR_GRAD1, message);
-}
+ void ChatManager::ErrorMessageInvalidPlayer(Player *player)
+ {
+	 ChatManager::SystemMessage(player, "Invalid player name or ID.");
+ }
 
  void ChatManager::EmoteMessage(Player *player, string message)
 {
-	ChatManager::EmoteMessage(player->GetID(), message.c_str());
-}
-
- void ChatManager::EmoteMessage(int playerID, const char *message)
-{
-	ChatManager::ProximityMessage(playerID, message, EMOTE_DISTANCE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE);
+	ChatManager::ProximityMessage(player, message, EMOTE_DISTANCE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE);
 }
 
  void ChatManager::LocalMessage(Player *player, string message)
@@ -52,11 +47,6 @@ static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
  void ChatManager::FactionMessage(Player *player, string message)
 {
 	SendClientMessage(player->GetID(), COLOR_BLUE, message.c_str());
-}
-
- void ChatManager::ProximityMessage(int playerID, const char *message, float distance, int color1, int color2, int color3, int color4, int color5)
-{
-	ChatManager::ProximityMessage(PlayerManager::GetPlayer(playerID), string(message), distance, color1, color2, color3, color4, color5);
 }
 
  void ChatManager::ProximityMessage(Player *player, string message, float distance, int color1, int color2, int color3, int color4, int color5)

@@ -3,8 +3,6 @@
 #include <string>
 #include "Point.h"
 
-using namespace std;
-
 class Player
 {
 public:
@@ -12,7 +10,7 @@ public:
 	Player(int id);
 	~Player();
 
-	string GetName();
+	std::string GetName();
 	bool HasValidName();
 
 	int GetID();
@@ -33,6 +31,9 @@ public:
 
 	void SetColor(int color);
 	int GetColor();
+
+	void SetTeam(int team);
+	int GetTeam();
 
 	void SetLevel(int level);
 	int GetLevel();
@@ -55,6 +56,9 @@ public:
 	void SetWantedLevel(int level);
 	int GetWantedLevel();
 
+	void GiveWeapon(int weaponID);
+	void GiveWeapon(int weaponID, int ammo);
+
 	void Kill();
 
 	Point3D GetPosition();
@@ -72,6 +76,7 @@ public:
 	int GetVehicleModelID();
 
 	int GetVirtualWorld();
+	void SetVirtualWorld(int virtualWorldID);
 
 	int GetInterior();
 	void SetInterior(int interiorID);

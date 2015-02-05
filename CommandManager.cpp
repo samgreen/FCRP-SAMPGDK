@@ -1,12 +1,9 @@
-#include <string>
-#include <string.h>
-#include <vector>
-#include <sstream>
+#include "CommandManager.h"
 
 #include "sampgdk.h"
 
+#include "Util.h"
 #include "Constants.h"
-#include "CommandManager.h"
 #include "ChatManager.h"
 #include "PlayerManager.h"
 #include "VehicleManager.h"
@@ -16,88 +13,78 @@
 
 using namespace std;
 
-typedef struct {
-	bool success;
-	string errorMessage;
-} CommandResult;
-
-static inline CommandResult CommandResultMake(bool success, string error)
+static string ToLowerCase(string input);
+static string ToLowerCase(string input)
 {
-	return CommandResult{ success, error };
+	string output;
+	// Transform commandInput to lowercase in command
+	transform(input.cbegin(), input.cend(), back_inserter(output), tolower);
+	return output;
 }
 
-static inline vector<string> split(string s)
+bool CommandEmote(Player *player, string text, vector<string> params);
+bool CommandEmote(Player *player, string text, vector<string> params)
 {
-	vector<string> tokens;
-	if (s.size() == 0) return tokens;
-
-	stringstream stringStream(s);
-	std::copy(istream_iterator<string>(stringStream), istream_iterator<string>(), back_inserter(tokens));
-
-	return tokens;
-}
-
-CommandManager::CommandManager() {}
-CommandManager::~CommandManager() {}
-
-bool CommandEmote(Player *player, string params)
-{
-	if (params.size() == 0) 
+	if (params.empty()) 
 	{
 		ChatManager::SystemMessage(player, "Usage: \"/me [emote]\"");
 	}
 	else
 	{
-		string emoteMessage = player->GetName() + params;
+		string emoteMessage = player->GetName() + " " + text;
 		ChatManager::EmoteMessage(player, emoteMessage);
 	}
 
 	return true; 
 }
 
-bool CommandDo(Player *player, string params)
+bool CommandDo(Player *player, string text, vector<string> params);
+bool CommandDo(Player *player, string text, vector<string> params)
 {
-	if (params.size() == 0)
+	if (params.empty())
 	{
 		ChatManager::SystemMessage(player, "Usage: \"/do [action]\"");
 	}
 	else
 	{
-		string message = params + " (" + player->GetName() + ")";
+		string message = text + " (" + player->GetName() + ")";
 		ChatManager::EmoteMessage(player, message);
 	}
 
 	return true;
 }
 
-bool CommandLocalOOC(Player *player, string params)
+bool CommandLocalOOC(Player *player, string text, vector<string> params);
+bool CommandLocalOOC(Player *player, string text, vector<string> params)
 {
-	if (params.size() == 0)
+	if (params.empty())
 	{
 		ChatManager::SystemMessage(player, "Usage: \"/b [text] (local OOC)\"");
 	}
 	else
 	{
-		string message = player->GetName() + ": ((" + params + " ))";
+		string message = player->GetName() + ": (( " + text + " ))";
 		ChatManager::LocalMessage(player, message);
 	}
 
 	return true;
 }
 
-bool CommandOOC(Player *player, string params)
+bool CommandOOC(Player *player, string text, vector<string> params);
+bool CommandOOC(Player *player, string text, vector<string> params)
 {
-	if (params.size() == 0)
+	if (params.empty())
 	{
 		ChatManager::SystemMessage(player, "Usage: \"/o [text] (global OOC)\"");
 	}
 	else
 	{
-		string message = "(( " + player->GetName() + ":" + params + " ))";
+		string message = "(( " + player->GetName() + ": " + text + " ))";
 		// TODO: Add Logging
 		for (auto i = PlayerManager::BeginPlayer(); i != PlayerManager::EndPlayer(); i++)
 		{
 			Player *p = i->second;
+			// TODO: Check if player has OOC enabled
 			SendClientMessage(p->GetID(), COLOR_OOC, message.c_str());
 		}
 	}
@@ -105,39 +92,41 @@ bool CommandOOC(Player *player, string params)
 	return true;
 }
 
-bool CommandGiveGun(Player *player, string params)
+bool CommandGiveGun(Player *player, string text, vector<string> params);
+bool CommandGiveGun(Player *player, string text, vector<string> params)
 {
-	vector<string> paramTokens = split(params);
-	if (paramTokens.size() == 2 && params.size() > 0)
+	if (params.size() == 2)
 	{
-		string playerIDString = paramTokens.at(0);
-		string weaponIDString = paramTokens.at(1);
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
+		{
+			string weaponIDString = params[1];
+			int weaponID = stoi(weaponIDString);
 
-		int playerID = stoi(playerIDString);
-		int weaponID = stoi(weaponIDString);
-
-		GivePlayerWeapon(playerID, weaponID, MAX_AMMO);
+			otherPlayer->GiveWeapon(weaponID);
+		}
 	}
 	else 
 	{
-		ChatManager::SystemMessage(player->GetID(), "Usage: \"/givegun [PlayerID] [WeaponID]\"");
-		ChatManager::SystemMessage(player->GetID(), "IDs: 1 knuckles |2 club |3 baton |4 knife |5 bat |6 shovel |7 cue |8 sword |9 chainsaw |10 13 dildos |14 flowers |15 cane");
-		ChatManager::SystemMessage(player->GetID(), "		16 grenade |17 smoke |18 molotov |22 pistol |23 sdpistol |24 deagle |25 shotgun |26 sawnoff |27 spas |28 uzi |29 mp5");
-		ChatManager::SystemMessage(player->GetID(), "		30 AK |31 M4 |32 tec9 |33 rifle |34 sniper |35 rpg |36 rpg |37 flamethrower |38 minigun |41 paint |42 extinguisher");
-		ChatManager::SystemMessage(player->GetID(), "		43 camera |44/45 goggles |46 para");
+		ChatManager::SystemMessage(player, "Usage: \"/givegun [PlayerID] [WeaponID]\"");
+		ChatManager::SystemMessage(player, "IDs: 1 knuckles |2 club |3 baton |4 knife |5 bat |6 shovel |7 cue |8 sword |9 chainsaw |10 13 dildos |14 flowers |15 cane");
+		ChatManager::SystemMessage(player, "		16 grenade |17 smoke |18 molotov |22 pistol |23 sdpistol |24 deagle |25 shotgun |26 sawnoff |27 spas |28 uzi |29 mp5");
+		ChatManager::SystemMessage(player, "		30 AK |31 M4 |32 tec9 |33 rifle |34 sniper |35 rpg |36 rpg |37 flamethrower |38 minigun |41 paint |42 extinguisher");
+		ChatManager::SystemMessage(player, "		43 camera |44/45 goggles |46 para");
 	}
 	
 	return true;
 }
 
-bool CommandKill(Player *player, string params)
+bool CommandKill(Player *player, string text, vector<string> params);
+bool CommandKill(Player *player, string text, vector<string> params)
 {
 	if (!player->IsHandCuffed() && !player->IsTied()) {
 		player->Kill();
 
-		string message = params;
-		if (params.size() == 0) {
-			message = player->GetName() + string(" ") + string(RANDOM_ARRAY_ELEMENT(DEATH_MESSAGES));
+		string message = text;
+		if (text.empty()) {
+			message = player->GetName() + string(" ") + string(DEATH_MESSAGES[5]); // TODO: Re-add random kill messagse
 		}
 		ChatManager::EmoteMessage(player, message);
 	}
@@ -150,7 +139,8 @@ bool CommandKill(Player *player, string params)
 	return true;
 }
 
-bool CommandDance(Player *player, string params)
+bool CommandDance(Player *player, string text, vector<string> params);
+bool CommandDance(Player *player, string text, vector<string> params)
 {
 	if (player->IsHandCuffed()) 
 	{
@@ -159,9 +149,9 @@ bool CommandDance(Player *player, string params)
 	else 
 	{
 		int danceID = -1;
-		if (params.size())
+		if (params.size() == 1)
 		{
-			danceID = stoi(params);
+			danceID = stoi(params[0]);
 		}
 
 		switch (danceID)
@@ -176,15 +166,12 @@ bool CommandDance(Player *player, string params)
 	return true;
 }
 
-bool CommandVeh(Player *player, string params)
+bool CommandVeh(Player *player, string text, vector<string> params);
+bool CommandVeh(Player *player, string text, vector<string> params)
 {
 	if (player->IsInVehicle())
 	{
 		ChatManager::SystemMessage(player, "Get out of your current vehicle first!");
-	}
-	else if (player->GetAdminLevel() < 5)
-	{
-		ChatManager::SystemMessage(player, "You are not authorized to use this command.");
 	}
 	else
 	{
@@ -193,12 +180,11 @@ bool CommandVeh(Player *player, string params)
 		//	return SystemMsg(playerid, "   Invalid vehicle model name/ID");
 		//else
 		//{
-		vector<string> paramTokens = split(params);
-		if (paramTokens.size() == 3 && params.size() > 0)
+		if (params.size() == 3)
 		{
-			string carIDString = paramTokens.at(0);
-			string color1String = paramTokens.at(1);
-			string color2String = paramTokens.at(2);
+			string carIDString = params[0];
+			string color1String = params[1];
+			string color2String = params[2];
 
 			int carID = stoi(carIDString);
 			int color1 = stoi(color1String);
@@ -226,13 +212,14 @@ bool CommandVeh(Player *player, string params)
 	return true;
 }
 
-bool CommandCropdust(Player *player, string params)
+bool CommandCropdust(Player *player, string text, vector<string> params);
+bool CommandCropdust(Player *player, string text, vector<string> params)
 {
 	if (player->GetCropDusterCooldown() > 0)
 	{
 		char message[MAX_CLIENT_MESSAGE];
 		sprintf(message, "You still have %.0f minutes left before you can crop dust again.", player->GetCropDusterCooldown()); // TODO: add cropdust time to the player object
-		ChatManager::SystemMessage(player->GetID(), message);
+		ChatManager::SystemMessage(player, message);
 	}
 	else if (!player->IsInVehicle() || !VehicleManager::IsCropduster(player->GetVehicleModelID()))
 	{
@@ -260,7 +247,8 @@ bool CommandCropdust(Player *player, string params)
 	return true;
 }
 
-bool CommandSetHealth(Player *player, vector<string> params)
+bool CommandSetHealth(Player *player, string text, vector<string> params);
+bool CommandSetHealth(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
@@ -268,26 +256,20 @@ bool CommandSetHealth(Player *player, vector<string> params)
 	}
 	else
 	{
-		int otherPlayerID = stoi(params.at(0));
-		int health = stoi(params.at(1));
-
-		Player *otherPlayer = PlayerManager::GetPlayer(otherPlayerID);
-		if (otherPlayer != NULL)
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
 		{
+			int health = stoi(params.at(1));
 			otherPlayer->SetHealth(health);
 		}
-		else
-		{
-			ChatManager::SystemMessage(player, "Invalid playerID");
-		}
-
 		//ChatManager::AdminMessage();
 	}
 
 	return true;
 }
 
-bool CommandSetArmor(Player *player, vector<string> params)
+bool CommandSetArmor(Player *player, string text, vector<string> params);
+bool CommandSetArmor(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
@@ -295,24 +277,19 @@ bool CommandSetArmor(Player *player, vector<string> params)
 	} 
 	else
 	{
-		int otherPlayerID = stoi(params.at(0));
-		int armor = stoi(params.at(1));
-
-		Player *otherPlayer = PlayerManager::GetPlayer(otherPlayerID);
-		if (otherPlayer != NULL)
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
 		{
+			int armor = stoi(params[1]);
 			otherPlayer->SetArmor(armor);
-		}
-		else
-		{
-			ChatManager::SystemMessage(player, "Invalid playerID");
 		}
 	}
 
 	return true;
 }
 
-bool CommandSetSkin(Player *player, vector<string> params)
+bool CommandSetSkin(Player *player, string text, vector<string> params);
+bool CommandSetSkin(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
@@ -320,24 +297,69 @@ bool CommandSetSkin(Player *player, vector<string> params)
 	}
 	else
 	{
-		int otherPlayerID = stoi(params.at(0));
-		int skinID = stoi(params.at(1));
-
-		Player *otherPlayer = PlayerManager::GetPlayer(otherPlayerID);
-		if (otherPlayer != NULL)
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
 		{
+			int skinID = stoi(params[1]);
 			otherPlayer->SetSkin(skinID);
-		}
-		else
-		{
-			ChatManager::SystemMessage(player, "Invalid playerID");
 		}
 	}
 
 	return true;
 }
 
-bool CommandFactionList(Player *player, vector<string> params)
+bool CommandGoto(Player *player, string text, vector<string> params);
+bool CommandGoto(Player *player, string text, vector<string> params)
+{
+	if (params.size() != 1)
+	{
+		ChatManager::SystemMessage(player, "Usage: \"/goto [Part of name or PlayerID]\"");
+	}
+	else
+	{
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
+		{
+			Point3D position = otherPlayer->GetPosition();
+			position.x += 1; // Offset their position slightly
+
+			player->SetPosition(position);
+			player->SetInterior(otherPlayer->GetInterior());
+			player->SetVirtualWorld(otherPlayer->GetVirtualWorld());
+		}
+	}
+
+	return true;
+}
+
+bool CommandGetHere(Player *player, string text, vector<string> params);
+bool CommandGetHere(Player *player, string text, vector<string> params)
+{
+	if (params.size() != 1)
+	{
+		ChatManager::SystemMessage(player, "Usage: \"/gethere [Part of name or PlayerID]\"");
+	}
+	else
+	{
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
+		{
+			Point3D position = player->GetPosition();
+			position.x += 1; // Offset their position slightly
+
+			otherPlayer->SetPosition(position);
+			otherPlayer->SetInterior(player->GetInterior());
+			otherPlayer->SetVirtualWorld(player->GetVirtualWorld());
+
+			ChatManager::SystemMessage(otherPlayer, "You've been teleported by an admin.");
+		}
+	}
+
+	return true;
+}
+
+bool CommandFactionList(Player *player, string text, vector<string> params);
+bool CommandFactionList(Player *player, string text, vector<string> params)
 {
 	for (int i = 0; i < PlayerFactionNumberOfFactions; i++)
 	{
@@ -376,7 +398,8 @@ bool CommandFactionList(Player *player, vector<string> params)
 	return true;
 }
 
-bool CommandFactionListMembers(Player *player, vector<string> params)
+bool CommandFactionListMembers(Player *player, string text, vector<string> params);
+bool CommandFactionListMembers(Player *player, string text, vector<string> params)
 {
 	PlayerFaction playerFaction = FactionManager::GetFaction(player);
 	if (playerFaction == PlayerFactionCivilian)
@@ -400,20 +423,58 @@ bool CommandFactionListMembers(Player *player, vector<string> params)
 	return true;
 }
 
-bool CommandFactionGiveRank(Player *player, vector<string> params)
+bool CommandFactionGiveRank(Player *player, string text, vector<string> params);
+bool CommandFactionGiveRank(Player *player, string text, vector<string> params)
 {
+	if (FactionManager::GetRank(player) < 6)
+	{
+		ChatManager::SystemMessage(player, "This command is only available to faction players at rank 6.");
+	}
+	else if (params.size() != 2)
+	{
+		ChatManager::SystemMessage(player, "Usage: \"/giverank [Part of name or PlayerID] [Rank 1-6]\"");
+	}
+	else
+	{
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer && FactionManager::GetFaction(player) == FactionManager::GetFaction(otherPlayer))
+		{
+			string rankString = params[1];
+			int newRank = stoi(rankString);
+			if (newRank < 1 || newRank > 6)
+			{
+				ChatManager::SystemMessage(player, "Valid ranks are from 1 to 6.");
+			}
+			else
+			{
+				int currentRank = FactionManager::GetRank(otherPlayer);
+
+				string status = (currentRank < newRank ? "promoted" : "demoted");
+				string factionName = FactionManager::GetName(FactionManager::GetFaction(player));
+				string message = player->GetName() + " has " + status + " " + otherPlayer->GetName() + " to rank " + to_string(newRank) + " in " + factionName; // TODO: Add Rank names
+				ChatManager::FactionMessage(otherPlayer, message);
+				ChatManager::FactionMessage(player, "You gave " + otherPlayer->GetName() + " rank " + to_string(newRank) + " in " + factionName);
+
+				FactionManager::SetRank(otherPlayer, newRank);
+			}
+		}
+		else
+		{
+			ChatManager::SystemMessage(player, otherPlayer->GetName() + " is not in your faction!");
+		}
+	}
 	return true;
 }
 
-bool CommandFactionInvite(Player *player, vector<string> params)
+bool CommandFactionInvite(Player *player, string text, vector<string> params);
+bool CommandFactionInvite(Player *player, string text, vector<string> params)
 {
 	PlayerFaction playerFaction = FactionManager::GetFaction(player);
-	int playerFactionRank = FactionManager::GetRank(player);
 	if (playerFaction == PlayerFactionCivilian)
 	{
 		ChatManager::SystemMessage(player, "You're not in a faction.");
 	}
-	else if (playerFactionRank < 6)
+	else if (FactionManager::GetRank(player) < 6)
 	{
 		ChatManager::SystemMessage(player, "You must be rank 6 to invite other players.");
 	}
@@ -423,47 +484,54 @@ bool CommandFactionInvite(Player *player, vector<string> params)
 	}
 	else
 	{
-		int otherPlayerID = stoi(params.at(0));
-		Player *otherPlayer = PlayerManager::GetPlayer(otherPlayerID);
-		PlayerFaction otherPlayerFaction = FactionManager::GetFaction(otherPlayer);
-		if (otherPlayerFaction != PlayerFactionCivilian)
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer)
 		{
-			ChatManager::SystemMessage(player, "That player is in another faction.");
-		}
-		else
-		{
-			// Set the other player's faction to the current player's faction
-			FactionManager::AddPlayer(otherPlayer, FactionManager::GetFaction(player));
+			PlayerFaction otherPlayerFaction = FactionManager::GetFaction(otherPlayer);
+			if (otherPlayerFaction != PlayerFactionCivilian)
+			{
+				ChatManager::SystemMessage(player, "That player is in another faction.");
+			}
+			else
+			{
+				// Set the other player's faction to the current player's faction
+				FactionManager::AddPlayer(otherPlayer, FactionManager::GetFaction(player));
 
-			// Send faction messages to the invitee and inviter
-			ChatManager::FactionMessage(otherPlayer, player->GetName() + " invited you to join their faction.");
-			ChatManager::FactionMessage(player, "You invited " + otherPlayer->GetName() + " join your faction.");
+				// Send faction messages to the invitee and inviter
+				ChatManager::FactionMessage(otherPlayer, player->GetName() + " invited you to join their faction.");
+				ChatManager::FactionMessage(player, "You invited " + otherPlayer->GetName() + " join your faction.");
+			}
 		}
 	}
 	return true;
 }
 
-bool CommandFactionUnInvite(Player *player, vector<string> params)
+bool CommandFactionUnInvite(Player *player, string text, vector<string> params);
+bool CommandFactionUnInvite(Player *player, string text, vector<string> params)
 {
 	return true;
 }
 
-bool CommandFactionDeposit(Player *player, vector<string> params)
+bool CommandFactionDeposit(Player *player, string text, vector<string> params);
+bool CommandFactionDeposit(Player *player, string text, vector<string> params)
 {
 	return true;
 }
 
-bool CommandFactionWithdraw(Player *player, vector<string> params)
+bool CommandFactionWithdraw(Player *player, string text, vector<string> params);
+bool CommandFactionWithdraw(Player *player, string text, vector<string> params)
 {
 	return true;
 }
 
-bool CommandFactionShowBalance(Player *player, vector<string> params)
+bool CommandFactionShowBalance(Player *player, string text, vector<string> params);
+bool CommandFactionShowBalance(Player *player, string text, vector<string> params)
 {
 	return true;
 }
 
-bool CommandToggleVehicleWindows(Player *player, vector<string> params)
+bool CommandToggleVehicleWindows(Player *player, string text, vector<string> params);
+bool CommandToggleVehicleWindows(Player *player, string text, vector<string> params)
 {
 	int vehicleID = player->GetVehicleID();
 	if (vehicleID == 0)
@@ -493,7 +561,8 @@ bool CommandToggleVehicleWindows(Player *player, vector<string> params)
 	return true;
 }
 
-bool CommandShowVehicleWindowState(Player *player, vector<string> params)
+bool CommandShowVehicleWindowState(Player *player, string text, vector<string> params);
+bool CommandShowVehicleWindowState(Player *player, string text, vector<string> params)
 {
 	int vehicleID = player->GetVehicleID();
 	if (vehicleID == 0)
@@ -517,45 +586,36 @@ bool CommandShowVehicleWindowState(Player *player, vector<string> params)
 static bool eventInProgress = false;
 static Point3D eventPosition;
 
-bool CommandStartEvent(Player *player, vector<string> params)
+bool CommandStartEvent(Player *player, string text, vector<string> params);
+bool CommandStartEvent(Player *player, string text, vector<string> params)
 {
-	if (player->GetAdminLevel() >= 5)
-	{
-		eventInProgress = true;
-		eventPosition = player->GetPosition();
+	eventInProgress = true;
+	eventPosition = player->GetPosition();
 
-		SendClientMessage(player->GetID(), COLOR_LIGHTBLUE, "Event position saved. Don't for get to use /endevent to stop teleportations.");
-		SendClientMessageToAll(COLOR_LIGHTBLUE, "** An admin has started an event. Use /joinevent to check it out!");
-	}
-	else
-	{
-		ChatManager::SystemMessage(player, "You are not authorized to use this command.");
-	}
+	SendClientMessage(player->GetID(), COLOR_LIGHTBLUE, "Event position saved. Don't for get to use /endevent to stop teleportations.");
+	SendClientMessageToAll(COLOR_LIGHTBLUE, "** An admin has started an event. Use /joinevent to check it out!");
 
 	return true;
 }
 
-bool CommandEndEvent(Player *player, vector<string> params)
+bool CommandEndEvent(Player *player, string text, vector<string> params);
+bool CommandEndEvent(Player *player, string text, vector<string> params)
 {
-	if (player->GetAdminLevel() < 5)
-	{
-		ChatManager::SystemMessage(player, "You are not authorized to use this command,");
-	}
-	else if (!eventInProgress)
+	if (!eventInProgress)
 	{
 		ChatManager::SystemMessage(player, "There is no event currently in progress.");
 	}
 	else
 	{
 		eventInProgress = false;
-
 		SendClientMessageToAll(COLOR_LIGHTBLUE, "** An admin has closed the event.");
 	}
 
 	return true;
 }
 
-bool CommandJoinEvent(Player *player, vector<string> params)
+bool CommandJoinEvent(Player *player, string text, vector<string> params);
+bool CommandJoinEvent(Player *player, string text, vector<string> params)
 {
 	if (!eventInProgress)
 	{
@@ -573,7 +633,8 @@ bool CommandJoinEvent(Player *player, vector<string> params)
 	return true;
 }
 
-bool CommandGetJob(Player *player, vector<string> params)
+bool CommandGetJob(Player *player, string text, vector<string> params);
+bool CommandGetJob(Player *player, string text, vector<string> params)
 {
 	if (JobManager::GetType(player) != JobTypeNone)
 	{
@@ -609,14 +670,15 @@ bool CommandGetJob(Player *player, vector<string> params)
 	return true;
 }
 
-bool CommandQuitJob(Player *player, vector<string> params)
+bool CommandQuitJob(Player *player, string text, vector<string> params);
+bool CommandQuitJob(Player *player, string text, vector<string> params)
 {
 	if (JobManager::GetContractTime(player) > 0)
 	{
 		ChatManager::SystemMessage(player, "You have " + to_string(JobManager::GetContractTime(player)) + " minutes left in your contract!");
 	}
 	else
-	{
+	{ 
 		string message;
 		switch (JobManager::GetType(player))
 		{
@@ -633,127 +695,279 @@ bool CommandQuitJob(Player *player, vector<string> params)
 	return true;
 }
 
+bool CommandMakeLeader(Player *player, string text, vector<string> params);
+bool CommandMakeLeader(Player *player, string text, vector<string> params)
+{
+	if (params.size() != 2)
+	{
+		ChatManager::SystemMessage(player, "Usage: \"/makeleader [Part of name or PlayerID] [Faction]\"");
+	}
+	else
+	{
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		if (otherPlayer) {
+			string factionString = params[1];
+			PlayerFaction faction = (PlayerFaction)stoi(factionString);
+
+			FactionManager::AddLeader(otherPlayer, faction);
+		}
+		
+	}
+
+	return true;
+}
+
+Player* CommandManager::GetPlayerFromParams(Player *player, vector<string> params, vector<string>::size_type index)
+{
+	Player *otherPlayer = CommandManager::GetPlayerFromParams(params, index);
+	if (!otherPlayer)
+	{
+		ChatManager::ErrorMessageInvalidPlayer(player);
+	}
+	return otherPlayer;
+}
+
+Player* CommandManager::GetPlayerFromParams(vector<string> params, vector<string>::size_type index)
+{
+	Player *player = NULL;
+
+	if (params.size() > index)
+	{
+		string playerString = params[index];
+		//sampgdk_logprintf("Player string: %s", playerString.c_str());
+		if (IsNumeric(playerString)) {
+			int playerID = stoi(playerString);
+			//sampgdk_logprintf("Checking for player id: %d", playerID);
+			player = PlayerManager::GetPlayer(playerID);
+			//sampgdk_logprintf("Player by id: %p", player);
+		}
+		else
+		{
+			// Transform the input to lower case so case insensitive match will work
+			playerString = ToLowerCase(playerString);
+
+			for (auto i = PlayerManager::BeginPlayer(); i != PlayerManager::EndPlayer(); i++)
+			{
+				string playerName = ToLowerCase(i->second->GetName());
+				if (playerName.find(playerString) != string::npos) {
+					player = i->second;
+					break;
+				}
+			}
+			//sampgdk_logprintf("Player by name: %p", player);
+		}
+	}
+	 
+	return player;
+}
+
+CommandFunction CommandManager::GetCommand(std::string commandInput)
+{
+	// Transform commandInput to lowercase in command
+	string command = ToLowerCase(commandInput);
+
+	//sampgdk_logprintf("Searching for command %s in map.", command.c_str());
+	auto commandFunctionIter = commandMap.find(command);
+	if (commandFunctionIter != commandMap.end()) {
+		return commandFunctionIter->second;
+	}
+	return NULL;
+}
+
 bool CommandManager::OnPlayerCommandText(Player *player, string commandText)
 {
-
-	vector<string> params = split(commandText);
-	// Does the command have additional parameters?
-	if (params.size() > 1) {
-		// Erase the first element, which is the command itself
-		params.erase(params.begin());
-	}
-
 	// TODO: Add spam time
 
-	if (commandText.find("/kill") == 0)
+	sampgdk_logprintf("Splitting params %s", commandText.c_str());
+	vector<string> params = split(commandText);
+	sampgdk_logprintf("Split in to %d params", params.size());
+
+	if (params.size() > 0) 
 	{
-		return CommandKill(player, commandText.substr(5, string::npos));
-	}
-	else if (commandText.find("/dance") == 0)
-	{
-		return CommandDance(player, commandText.substr(6, string::npos));
-	}
-	else if (commandText.find("/rw") == 0)
-	{
-		return CommandToggleVehicleWindows(player, params);
-	}
-	else if (commandText.find("/windows") == 0)
-	{
-		return CommandShowVehicleWindowState(player, params);
-	}
-	else if (commandText.find("/cropdust") == 0)
-	{
-		return CommandCropdust(player, commandText.substr(9, string::npos));
-	}
-	else if (commandText.find("/givegun") == 0)
-	{
-		return CommandGiveGun(player, commandText.substr(8, string::npos));
-	}
-	else if (commandText.find("/sethp") == 0)
-	{
-		return CommandSetHealth(player, params);
-	}
-	else if (commandText.find("/setarmor") == 0)
-	{
-		return CommandSetArmor(player, params);
-	}
-	else if (commandText.find("/setskin") == 0)
-	{
-		return CommandSetSkin(player, params);
-	}
-	else if (commandText.find("/factions") == 0 || commandText.find("/families") == 0)
-	{
-		return CommandFactionList(player, params);
-	}
-	else if (commandText.find("/invite") == 0)
-	{
-		return CommandFactionInvite(player, params);
-	}
-	else if (commandText.find("/uninvite") == 0)
-	{
-		return CommandFactionUnInvite(player, params);
-	}
-	else if (commandText.find("/fdeposit") == 0)
-	{
-		return CommandFactionDeposit(player, params);
-	}
-	else if (commandText.find("/fwithdraw") == 0)
-	{
-		return CommandFactionWithdraw(player, params);
-	}
-	else if (commandText.find("/fbalance") == 0)
-	{
-		return CommandFactionShowBalance(player, params);
-	}
-	else if (commandText.find("/members") == 0)
-	{
-		return CommandFactionListMembers(player, params);
-	}
-	else if (commandText.find("/startevent") == 0)
-	{
-		return CommandStartEvent(player, params);
-	}
-	else if (commandText.find("/endevent") == 0)
-	{
-		return CommandEndEvent(player, params);
-	}
-	else if (commandText.find("/joinevent") == 0)
-	{
-		return CommandJoinEvent(player, params);
-	}
-	else if (commandText.find("/v") == 0)
-	{
-		return CommandVeh(player, commandText.substr(2, string::npos));
-	}
-	else if (commandText.find("/o") == 0)
-	{
-		return CommandOOC(player, commandText.substr(2, string::npos));
-	}
-	else if (commandText.find("/b") == 0)
-	{
-		return CommandLocalOOC(player, commandText.substr(2, string::npos));
-	}
-	else if (commandText.find("/me") == 0)
-	{
-		return CommandEmote(player, commandText.substr(3, string::npos));
-	}
-	else if (commandText.find("/do") == 0)
-	{
-		return CommandDo(player, commandText.substr(3, string::npos));
-	} 
-	else if (commandText.find("/getjob") == 0)
-	{
-		return CommandDo(player, commandText.substr(3, string::npos));
-	}
-	else if (commandText.find("/quitjob") == 0)
-	{
-		return CommandDo(player, commandText.substr(3, string::npos));
+		sampgdk_logprintf("Parsing commandRemaing and Name");
+		string commandRemainingText;
+		string commandName = params[0].substr(1);
+		if (params.size() > 1)
+		{
+			commandRemainingText = commandText.substr(params[0].size() + 1);
+		}
+		
+		sampgdk_logprintf("Name %s - Remaining %s", commandName.c_str(), commandRemainingText.c_str());
+
+		auto commandFunction = GetCommand(commandName);
+		if (commandFunction)
+		{
+			sampgdk_logprintf("Found Command: %s", commandName.c_str());
+
+			bool passedChecks = true;
+			  
+			auto adminLevelIter = commandAdminLevelMap.find(commandFunction);
+			if (adminLevelIter != commandAdminLevelMap.cend()) {
+				passedChecks = AdminLevelCheck(player, adminLevelIter->second);
+				//if (!passedChecks)
+				//{
+				//	sampgdk_logprintf("Failed admin level check for command %s", commandName.c_str());
+				//}
+			}
+
+			if (passedChecks) {
+				// Erase the first element, which is the command itself
+				params.erase(params.begin());
+				commandFunction(player, commandRemainingText, params);
+			}
+
+			return true;
+		}
 	}
 
 	return false;
 }
 
-bool CommandManager::OnPlayerCommandText(int playerID, const char *commandText)
+#define COMMAND(name, commandFunction) commandMap[name] = &commandFunction;
+#define ADMIN_COMMAND(name, commandFunction, adminLevel) COMMAND(name, commandFunction); commandAdminLevelMap[&commandFunction] = adminLevel;
+CommandManager::CommandManager()
 {
-	return CommandManager::OnPlayerCommandText(PlayerManager::GetPlayer(playerID), string(commandText));
+	//
+	// Admin
+	//
+	ADMIN_COMMAND("makeleader", CommandMakeLeader, 6);
+	ADMIN_COMMAND("givegun", CommandGiveGun, 6);
+	
+	ADMIN_COMMAND("sethp", CommandSetHealth, 4);
+	ADMIN_COMMAND("setarmor", CommandSetArmor, 4);
+	ADMIN_COMMAND("setskin", CommandSetSkin, 4);
+
+	ADMIN_COMMAND("v", CommandVeh, 2);
+
+	ADMIN_COMMAND("startevent", CommandStartEvent, 2);
+	ADMIN_COMMAND("endevent", CommandEndEvent, 2);
+	
+	ADMIN_COMMAND("gethere", CommandGetHere, 2);
+	ADMIN_COMMAND("goto", CommandGoto, 2);
+
+	//ADMIN_COMMAND("slap", CommandGoto, 2);
+
+	//ADMIN_COMMAND("freeze", CommandFreeze, 2);
+	//ADMIN_COMMAND("unfreeze", CommandUnFreeze, 2);
+
+	//
+	// Roleplay Chat & Emote
+	//
+	COMMAND("me", CommandEmote);
+	COMMAND("b", CommandLocalOOC);
+	COMMAND("o", CommandOOC);
+	COMMAND("ooc", CommandOOC);
+	COMMAND("do", CommandDo);
+	//COMMAND("a", CommandAdminChat;
+	//COMMAND("s", CommandShout;
+	//COMMAND("c", CommandCloseChat
+	//COMMAND("l", CommandLocalIC;
+	//COMMAND("f", CommandFactionChat;
+	//COMMAND("m", CommandMegaphone;
+	//COMMAND("n", CommandNewbieChat;
+	//COMMAND("ad", CommandAdvertise;
+	//COMMAND("w", CommandWhisper;
+	
+
+	//
+	// Player
+	//
+	COMMAND("kill", CommandKill);
+	COMMAND("dance", CommandDance);
+	COMMAND("joinevent", CommandJoinEvent);
+
+	//
+	// Vehicle
+	//
+	COMMAND("rw", CommandToggleVehicleWindows);
+	COMMAND("windows", CommandShowVehicleWindowState);
+
+	//
+	// Faction
+	//
+	COMMAND("factions", CommandFactionList); COMMAND("families", CommandFactionList);
+	COMMAND("invite", CommandFactionInvite);
+	COMMAND("uninvite", CommandFactionUnInvite);
+	COMMAND("fbalance", CommandFactionShowBalance);
+	COMMAND("fwithdraw", CommandFactionWithdraw);
+	COMMAND("fdeposit", CommandFactionDeposit);
+	COMMAND("members", CommandFactionListMembers);
+	COMMAND("giverank", CommandFactionGiveRank);
+
+	//
+	// Job
+	//
+	COMMAND("cropdust", CommandCropdust);
+	COMMAND("getjob", CommandGetJob);
+	COMMAND("quitjob", CommandQuitJob);
+
+	//
+	// Police
+	//
+	//COMMAND("tazer", CommandTazer);
+	//COMMAND("cuff", CommandCuff);
+	//COMMAND("uncuff", CommandUncuff);
+	//COMMAND("detain", CommandDetain);
+	//COMMAND("arrest", CommandArrest);
+	//COMMAND("gov", CommandGovernmentMessage);
+	//COMMAND("su", CommandSuspect);
+	//COMMAND("wanted", CommandWanted);
+	//COMMAND("ticket", CommandTicket);
+	//COMMAND("confiscate", CommandConfiscate);
+	//COMMAND("clear", CommandClearWantedLevel);
+	//COMMAND("rb", CommandCreateRoadBlock);
+	//COMMAND("bk", CommandRequestBackup);
+	//COMMAND("bkcancel", CommandCancelRequestBackup);
+	//COMMAND("impound", CommandImpound);
+	//COMMAND("residence", CommandShowResidence);
+
+	//
+	// EMT 
+	//
+	//COMMAND("heal", CommandHeal);
+
+	//
+	// Animations
+	//
+
+	// animation commands -----------------
+	//dcmd(drunk, 5, cmdtext);
+	//dcmd(bomb, 4, cmdtext);
+	//dcmd(crossarms, 9, cmdtext);
+	//dcmd(seat, 4, cmdtext);
+	//dcmd(lay, 3, cmdtext);
+	//dcmd(laugh, 5, cmdtext);
+	//dcmd(robman, 6, cmdtext);
+	//dcmd(getarrested, 11, cmdtext);
+	//dcmd(fall, 4, cmdtext);
+	//dcmd(wave, 4, cmdtext);
+	//dcmd(crack, 5, cmdtext);
+	//dcmd(chat, 4, cmdtext);g
+	//dcmd(lookout, 7, cmdtext);
+	//dcmd(deal, 4, cmdtext);
+	//dcmd(taichi, 6, cmdtext);
+	//dcmd(gro, 3, cmdtext);
+	//dcmd(eatanim, 7, cmdtext);
+	//dcmd(fucku, 5, cmdtext);
+	//dcmd(smoke, 5, cmdtext);
+	//dcmd(walk, 4, cmdtext);
+	//dcmd(run, 3, cmdtext);
+	//dcmd(hide, 4, cmdtext);
+	//dcmd(rap, 3, cmdtext);
+	//dcmd(handsup, 7, cmdtext);
+	//dcmd(dance, 5, cmdtext);
+	//dcmd(cellin, 6, cmdtext);
+	//dcmd(cellout, 7, cmdtext);
+	//dcmd(vomit, 5, cmdtext);
+	//dcmd(lightcig, 8, cmdtext);
+	//dcmd(slapass, 7, cmdtext);
+	//dcmd(sideways, 8, cmdtext);
+	//dcmd(stopani, 7, cmdtext);
+	//dcmd(animlist, 8, cmdtext);
+	//dcmd(piss, 4, cmdtext);
+}
+
+CommandManager::~CommandManager()
+{
+
 }

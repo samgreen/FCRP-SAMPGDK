@@ -1,10 +1,12 @@
 #include "JobManager.h"
 #include "Player.h"
 
+using namespace std;
+
 static const int DEFAULT_CONTRACT_TIME = 60; // Minutes
 
-map<int, int> JobManager::playerJobContractTimeMap;
-map<int, JobType> JobManager::playerJobTypeMap;
+unordered_map<int, int> JobManager::playerJobContractTimeMap;
+unordered_map<int, JobType> JobManager::playerJobTypeMap;
 
 JobType JobManager::GetType(Player *player)
 {

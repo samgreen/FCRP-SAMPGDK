@@ -1,7 +1,10 @@
 #include "PlayerManager.h"
 #include "Player.h"
 
-map<int, Player *> PlayerManager::playerMap;
+using namespace std;
+
+unordered_map<int, Player *> PlayerManager::playerMap;
+unordered_map<string, Player*> PlayerManager::playerNameMap;
 
 Player* PlayerManager::GetPlayer(int playerID)
 {
@@ -12,32 +15,29 @@ Player* PlayerManager::GetPlayer(int playerID)
 	return NULL;
 }
 
-const map<int, Player *>::const_iterator PlayerManager::BeginPlayer()
+Player* PlayerManager::GetPlayerByName(string name)
+{
+	auto index = playerNameMap.find(name);
+	if (index != playerNameMap.end()) {
+		return index->second;
+	}
+	return NULL;
+}
+
+const unordered_map<int, Player *>::const_iterator PlayerManager::BeginPlayer()
 {
 	return playerMap.cbegin();
 }
 
-const map<int, Player *>::const_iterator PlayerManager::EndPlayer()
+const unordered_map<int, Player *>::const_iterator PlayerManager::EndPlayer()
 {
 	return playerMap.cend();
 }
 
-//static Player* GetPlayerByName(string name)
-//{
-//	for (auto i = playerMap.begin(); i < playerMap.end(); i++)
-//	{
-//		Player *p = i->second;
-//		if (p->GetName() == name)
-//		{
-//			return p;
-//		}
-//	}
-//	return NULL;
-//}
-
 void PlayerManager::AddPlayer(Player *player)
 {
 	playerMap[player->GetID()] = player;
+	playerNameMap[player->GetName()] = player;
 }
 
 void PlayerManager::RemovePlayer(Player *player)

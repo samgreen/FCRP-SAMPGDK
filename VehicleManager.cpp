@@ -2,7 +2,9 @@
 #include "Constants.h"
 #include "sampgdk.h"
 
-map<int, bool> VehicleManager::vehicleWindowMap;
+using namespace std;
+
+unordered_map<int, bool> VehicleManager::vehicleWindowMap;
 
 void VehicleManager::CreateStartingVehicles()
 {

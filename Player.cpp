@@ -2,12 +2,11 @@
 #include "sampgdk.h"
 #include "Constants.h"
 
-Player::Player()
-{
-	id = -1;
-}
+using namespace std;
 
-Player::Player(int id) : id(id), level(1), adminLevel(6), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f)
+Player::Player() : Player(-1) {}
+
+Player::Player(int id) : id(id), level(1), adminLevel(0), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f)
 {
 	SetPlayerSkin(id, skin);
 }
@@ -39,6 +38,7 @@ int Player::GetID()
 
 int Player::GetAdminLevel()
 {
+	if (IsPlayerAdmin(id)) return 1337;
 	return adminLevel;
 }
 
@@ -95,6 +95,16 @@ void Player::SetColor(int color)
 int Player::GetColor()
 {
 	return GetPlayerColor(id);
+}
+
+void Player::SetTeam(int team)
+{
+	SetPlayerTeam(id, team);
+}
+
+int Player::GetTeam()
+{
+	return GetPlayerTeam(id);
 }
 
 void Player::SetLevel(int level)
@@ -185,6 +195,15 @@ void Player::Kill()
 	SetPlayerHealth(id, 0);
 }
 
+void Player::GiveWeapon(int weaponID)
+{
+	GiveWeapon(weaponID, MAX_AMMO);
+}
+void Player::GiveWeapon(int weaponID, int ammo)
+{
+	GivePlayerWeapon(id, weaponID, ammo);
+}
+
 Point3D Player::GetPosition()
 {
 	float x, y, z;
@@ -245,6 +264,11 @@ bool Player::IsInVehicleID(int vehicleID)
 int Player::GetVirtualWorld()
 {
 	return GetPlayerVirtualWorld(id);
+}
+
+void Player::SetVirtualWorld(int virtualWorldID)
+{
+	SetPlayerVirtualWorld(id, virtualWorldID);
 }
 
 int Player::GetInterior()

@@ -2,6 +2,7 @@
 #include "sampgdk.h"
 #include <stdlib.h>
 
+#define UPDATED_TIMESTAMP	__TIMESTAMP__
 // Server MOTD
 #define MOTD				"Welcome back to the revolution. Please report all bugs using the /reportbug feature."
 
@@ -43,6 +44,7 @@
 #define COLOR_PINKISH 		0xFF8282AA
 
 #define RANDOM_ARRAY_ELEMENT(anArray) anArray[rand() % sizeof(anArray)]
+
 // ----- random newb spawns -----
 //float RANDOM_SPAWNS[][3] = {
 //	{  26.1551, 922.8038, 23.6378 },

@@ -21,9 +21,9 @@ static CommandManager *commandManager = new CommandManager;
 static PlayerManager *playerManager;
 static VehicleManager *vehicleManager;
 
-void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params) {
-	//sampgdk::logprintf("Tick count: %d", GetTickCount());
-}
+//void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params) {
+//	sampgdk::logprintf("Tick count: %d", GetTickCount());
+//}
  
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	sampgdk::logprintf("----------------------------------");
@@ -34,7 +34,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	VehicleManager::CreateStartingVehicles();
 
 	UsePlayerPedAnims();
-	AllowAdminTeleport(true);
+	//AllowAdminTeleport(true);
 	AllowInteriorWeapons(true);
 	SetNameTagDrawDistance(10);
 	EnableStuntBonusForAll(false);
@@ -43,13 +43,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 
 	SetGameModeText("BC-RP v0.1 ALPHA");
 	AddPlayerClass(0, 1958.3783f, 1343.1572f, 15.3746f, 269.1425f, 0, 0, 0, 0, 0, 0);
-	SetTimer(1000, true, PrintTickCountTimer, 0);
+	//SetTimer(1000, true, PrintTickCountTimer, 0);
 
 	return true;
 }
  
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
-	PlayerManager::AddPlayer(new Player(playerid));
+	Player *player = new Player(playerid);
+	PlayerManager::AddPlayer(player);
 
 	//if (!player.HasValidName()) 
 	//{
@@ -69,6 +70,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	return false;
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
+	Player *player = PlayerManager::GetPlayer(playerid);
+
+	string message = player->GetName() + " has left the server.";
+	SendClientMessageToAll(COLOR_GOLD, message.c_str());
+
+	PlayerManager::RemovePlayer(player);
+
+	return true;
+}
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 	SetPlayerInterior(playerid, 0);
 	SetPlayerPos(playerid, 163.984863f, 1213.388305f, 21.501449f);
@@ -83,7 +95,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	SetPlayerInterior(playerid, 0);
 
-	sampgdk_logprintf("OnPlayerSpawn with id: %d", playerid);
+	sampgdk_logprintf("%s has spawned.", PlayerManager::GetPlayer(playerid)->GetName().c_str());
 	
 	//int randomSpawnIndex = rand() % sizeof(RANDOM_SPAWNS);
 	//float x = RANDOM_SPAWNS[randomSpawnIndex][0];
@@ -96,7 +108,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
-	return commandManager->OnPlayerCommandText(playerid, cmdtext);
+	return commandManager->OnPlayerCommandText(PlayerManager::GetPlayer(playerid), string(cmdtext));
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {

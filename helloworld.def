@@ -5,6 +5,7 @@ EXPORTS
 	ProcessTick
 	OnGameModeInit
 	OnPlayerConnect
+	OnPlayerDisconnect
 	OnPlayerRequestClass
 	OnPlayerCommandText
 	OnPlayerText

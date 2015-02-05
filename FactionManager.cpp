@@ -1,14 +1,25 @@
 #include "FactionManager.h"
 #include "Player.h"
+#include "sampgdk.h"
 
-map<int, PlayerFaction> FactionManager::playerFactionMap;
-map<int, int> FactionManager::playerFactionRankMap;
+using namespace std;
+
+unordered_map<int, PlayerFaction> FactionManager::playerFactionMap;
+unordered_map<int, int> FactionManager::playerFactionRankMap;
+
+void FactionManager::AddLeader(Player *player, PlayerFaction faction)
+{
+	AddPlayer(player, faction);
+	SetRank(player, 6); // Set to leader rank
+}
 
  void FactionManager::AddPlayer(Player *player, PlayerFaction faction)
 {
 	playerFactionMap[player->GetID()] = faction;
 	playerFactionRankMap[player->GetID()] = 0; // Set rank to 0 upon invite
 
+	// Set the player's team to this faction
+	player->SetTeam(faction);
 	// Set the other player's skin to the default skin
 	player->SetSkin(GetDefaultSkin(faction));
 }
@@ -52,13 +63,18 @@ map<int, int> FactionManager::playerFactionRankMap;
 	return PlayerFactionCivilian;
 }
 
- int FactionManager::GetRank(Player *player)
+int FactionManager::GetRank(Player *player)
 {
 	auto index = playerFactionRankMap.find(player->GetID());
 	if (index != playerFactionRankMap.end()) {
 		return index->second;
 	}
 	return -1;
+}
+
+void FactionManager::SetRank(Player *player, int rank)
+{
+	playerFactionRankMap[player->GetID()] = rank;
 }
 
  string FactionManager::GetName(PlayerFaction faction)
@@ -70,7 +86,7 @@ map<int, int> FactionManager::playerFactionRankMap;
 	case PlayerFactionFinalBuild:	return "Final Build Corporation";
 	case PlayerFactionTaxi:			return "Taxi";
 	case PlayerFactionEMT:			return "EMT";
-	case PlayerFactionPolice:		return "Police";
+	case PlayerFactionPolice:		return "BCSD";
 	case PlayerFactionDemons:		return "Mojave Demons";
 	case PlayerFactionErretat:		return "Erretat Tribe";
 	case PlayerFactionDisciples:	return "Disciples";

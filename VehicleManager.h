@@ -1,18 +1,16 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 #include "sampgdk.h"
-
-using namespace std;
 
 class VehicleManager
 {
 public:
 	static void CreateStartingVehicles(); // Create the initial starting vehicles on the server
 
-	static string GetVehicleName(int vehicleID);
+	static std::string GetVehicleName(int vehicleID);
 
 	static bool IsCropduster(int vehicleID);
 	static bool IsSemiTruck(int vehicleID);
@@ -35,5 +33,5 @@ private:
 	VehicleManager();
 	~VehicleManager();
 
-	static map<int, bool> vehicleWindowMap;
+	static std::unordered_map<int, bool> vehicleWindowMap;
 };
