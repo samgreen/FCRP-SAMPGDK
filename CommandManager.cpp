@@ -327,6 +327,160 @@ bool CommandGoto(Player *player, string text, vector<string> params)
 			player->SetInterior(otherPlayer->GetInterior());
 			player->SetVirtualWorld(otherPlayer->GetVirtualWorld());
 		}
+		else // Goto a location
+		{
+			player->SetInterior(0);
+			if (params[0].find("taxi") != string::npos) // /goto taxi
+			{
+				player->SetPosition(Point3DMake(-300.9337, 1322.2476, 54.2912));
+			}
+			else if (params[0].find("corp1") != string::npos) // /goto corp1
+			{
+				player->SetPosition(Point3DMake(641.5588, 1194.2560, 11.7188));
+			}
+			else if (params[0].find("corp2") != string::npos) // /goto corp2
+			{
+				player->SetPosition(Point3DMake(-702.7709, 954.3311, 12.3812));
+			}
+			else if (params[0].find("pd") != string::npos) // /goto pd
+			{
+				player->SetPosition(Point3DMake(213.9422, 1903.9194, 17.6406));
+			}
+			else if (params[0].find("lsair") != string::npos) // /goto lsair
+			{
+				player->SetPosition(Point3DMake(2006.3446, -2532.9819, 13.5469));
+			}
+			else if (params[0].find("sfair") != string::npos) // /goto sfair
+			{
+				player->SetPosition(Point3DMake(-1109.7617, 374.7649, 14.1484));
+			}
+			else if (params[0].find("lvair") != string::npos) // /goto lvair
+			{
+				player->SetPosition(Point3DMake(1435.2316, 1464.0927, 10.8203));
+			}
+			else if (params[0].find("pier") != string::npos) // /goto pier
+			{
+				player->SetPosition(Point3DMake(835.3309, -2055.8435, 12.8672));
+			}
+			else if (params[0].find("chiliad") != string::npos) // /goto chiliad
+			{
+				player->SetPosition(Point3DMake(-2317.3325, -1618.2611, 483.7491));
+			}
+			else if (params[0].find("drift") != string::npos) // /goto drift
+			{
+				player->SetPosition(Point3DMake(-2402.9199, -597.4742, 132.6484));
+			}
+			else if (params[0].find("wheelarch") != string::npos) // /goto wheelarch
+			{
+				player->SetPosition(Point3DMake(-2705.5552, 218.5947, 4.1797));
+			}
+			else if (params[0].find("locolow") != string::npos) // /goto locolow
+			{
+				player->SetPosition(Point3DMake(2646.9751, -2004.6864, 13.3828));
+			}
+			else if (params[0].find("transfender") != string::npos) // /goto transfender
+			{
+				player->SetPosition(Point3DMake(-1936.0275, 228.9241, 34.1563));
+			}
+			else if (params[0].find("coalminer") != string::npos) // /goto coalminer
+			{
+				player->SetPosition(Point3DMake(858.2095, 867.3469, 13.3516));
+			}
+			else if (params[0].find("skatepark") != string::npos) // /goto skatepark
+			{
+				player->SetPosition(Point3DMake(1882.3457, -1394.2074, 13.5703));
+			}
+			else if (params[0].find("skyscraper") != string::npos) // /goto skyscraper
+			{
+				player->SetPosition(Point3DMake(1543.8177, -1353.3562, 329.4742));
+			}
+			else if (params[0].find("mafjump") != string::npos) // /goto mafjump
+			{
+				player->SetPosition(Point3DMake(1311.2545, -1767.1433, 13.3828));
+			}
+			else if (params[0].find("lombardstreet") != string::npos) // /goto lombardstreet
+			{
+				player->SetPosition(Point3DMake(-2138.5032, 918.8997, 79.8516));
+			}
+			else if (params[0].find("boat") != string::npos) // /goto boat
+			{
+				player->SetPosition(Point3DMake(-2473.3965, 1541.1923, 36.8047));
+			}
+			else if (params[0].find("bridgetop") != string::npos) // /goto bridgetop
+			{
+				player->SetPosition(Point3DMake(-2678.0583, 1595.1338, 217.2739));
+			}
+			else if (params[0].find("halfpipe") != string::npos) // /goto halfpipe
+			{
+				player->SetPosition(Point3DMake(-1642.9333, 100.1801, -11.1626));
+			}
+			else if (params[0].find("underwater") != string::npos) // /goto underwater
+			{
+				player->SetPosition(Point3DMake(-1687.6527, 172.3593, -51.7813));
+			}
+			else if (params[0].find("casino") != string::npos) // /goto casino
+			{
+				player->SetPosition(Point3DMake(-524.9528, 2592.3601, 53.4141));
+			}
+			else if (params[0].find("skydive") != string::npos) // /goto skydive
+			{
+				player->SetPosition(Point3DMake(443.1121, 662.1830, 4755.9175));
+			}
+			else if (params[0].find("smokespot") != string::npos) // /goto smokespot
+			{
+				player->SetPosition(Point3DMake(770.8389, 3778.0808, 8.5173));
+			}
+			else if (params[0].find("fc") != string::npos) // /goto fc
+			{
+				player->SetPosition(Point3DMake(-191.8151, 1099.8364, 19.5938));
+			}
+			else if (params[0].find("lb") != string::npos) // /goto lb
+			{
+				player->SetPosition(Point3DMake(-844.7393, 1546.5504, 23.1495));
+			}
+			else if (params[0].find("eq") != string::npos) // /goto eq
+			{
+				player->SetPosition(Point3DMake(-1495.7999, 2603.5476, 55.6929));
+			}
+			else if (params[0].find("boneyard") != string::npos) // /goto boneyard
+			{
+				player->SetPosition(Point3DMake(339.1008, 2500.8767, 16.4844));
+			}
+			else if (params[0].find("process") != string::npos)
+			{
+				player->SetPosition(Point3DMake(-928.9985, 2022.5295, 60.9141));
+			}
+			else if (params[0].find("cropdust") != string::npos)
+			{
+				player->SetPosition(Point3DMake(-156.5437, 39.6247, 3.1172));
+			}
+			else if (params[0].find("trucker") != string::npos)
+			{
+				player->SetPosition(Point3DMake(607.6465, 1669.4261, 7.1712));
+			}
+			else if (params[0].find("hotel1") != string::npos)
+			{
+				player->SetPosition(Point3DMake(2251.85, -1138.16, 1050.63));
+			}
+			else if (params[0].find("hotel2") != string::npos)
+			{
+				player->SetPosition(Point3DMake(2259.5757, -1135.9651, 1050.6328));
+			}
+			else if (params[0].find("hotel3") != string::npos)
+			{
+				player->SetPosition(Point3DMake(444.646911, 508.239044, 1001.419494));
+			}
+			else if (params[0].find("ubermotors") != string::npos)
+			{
+				player->SetPosition(Point3DMake(1094.1666, 1599.0883, 12.5469));
+			} 
+			else
+			{
+				ChatManager::SystemMessage(player, "places: taxi corp1 corp2 pd lsair sfair lvair pier underwater boat mafjump skyscraper coalminer");
+				ChatManager::SystemMessage(player, "chiliad drift wheelarch locolow transfender halfpipe bridgetop lombardstreet skatepark casino skydive");
+				ChatManager::SystemMessage(player, "smokespot fc lb eq boneyard process cropdust trucker");
+			}
+		}
 	}
 
 	return true;

@@ -10,9 +10,15 @@ class Player
 {
 public:
 	template <class Archive>
-	void serialize(Archive &archive)
+	void save(Archive &archive) const
 	{
-		archive(GetName(), level, experience, money, skin, adminLevel);
+		archive(level, experience, money, skin, adminLevel, wantedLevel, cropDusterLevel, cropDusterCooldown);
+	}
+
+	template <class Archive>
+	void load(Archive &archive)
+	{
+		archive(level, experience, money, skin, adminLevel, wantedLevel, cropDusterLevel, cropDusterCooldown);
 	}
 
 	Player();
