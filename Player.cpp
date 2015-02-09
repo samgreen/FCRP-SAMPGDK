@@ -6,9 +6,10 @@ using namespace std;
 
 Player::Player() : Player(-1) {}
 
-Player::Player(int id) : id(id), level(1), adminLevel(0), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f)
+Player::Player(int id) : id(id), level(1), adminLevel(0), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f), miningLevel(0), miningStat(0)
 {
 	SetPlayerSkin(id, skin);
+	AddMoney(100000);
 }
 
 
@@ -24,7 +25,7 @@ string Player::GetName()
 	name = string(nameChar);
 	return name;
 }
-
+ 
 bool Player::HasValidName()
 {
 	string name = GetName();
@@ -122,12 +123,16 @@ int Player::GetLevel()
 
 int Player::AddMoney(int addedMoney)
 {
+	GivePlayerMoney(id, addedMoney);
+
 	money += addedMoney;
 	return money;
 }
 
 int Player::SubtractMoney(int subtractedMoney)
 {
+	GivePlayerMoney(id, -subtractedMoney);
+
 	money -= subtractedMoney;
 	return money;
 }
@@ -181,6 +186,16 @@ void Player::SetTied(bool tied)
 	isTied = tied;
 }
 
+bool Player::IsGagged()
+{
+	return isGagged;
+}
+
+void Player::SetGagged(bool gagged)
+{
+	isGagged = gagged;
+}
+
 void Player::SetWantedLevel(int level)
 {
 	SetPlayerWantedLevel(id, level);
@@ -215,6 +230,11 @@ Point3D Player::GetPosition()
 void Player::SetPosition(Point3D position)
 {
 	SetPlayerPos(id, position.x, position.y, position.z);
+}
+
+bool Player::IsInRangeOfPlayer(float range, Player *player)
+{
+	return IsInRangeOfPoint(range, player->GetPosition());
 }
 
 bool Player::IsInRangeOfPoint(float range, Point3D point)
@@ -295,4 +315,24 @@ void Player::SetCropDusterCooldown(float cooldown)
 float Player::GetCropDusterCooldown()
 {
 	return cropDusterCooldown;
+}
+
+int Player::IncrementCoalMiningStat()
+{
+	return ++miningStat;
+}
+
+int Player::GetCoalMiningStat()
+{
+	return miningStat;
+}
+
+void Player::SetCoalMiningLevel(int level)
+{
+	miningLevel = level;
+}
+
+int Player::GetCoalMiningLevel()
+{
+	return miningLevel;
 }

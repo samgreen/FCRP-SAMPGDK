@@ -9,6 +9,7 @@
 #include "VehicleManager.h"
 #include "FactionManager.h"
 #include "JobManager.h"
+#include "CoalmineManager.h"
 #include "Player.h"
 
 using namespace std;
@@ -126,7 +127,7 @@ bool CommandKill(Player *player, string text, vector<string> params)
 
 		string message = text;
 		if (text.empty()) {
-			message = player->GetName() + string(" ") + string(DEATH_MESSAGES[5]); // TODO: Re-add random kill messagse
+			message = player->GetName() + string(" ") + RANDOM_ARRAY_ELEMENT(DEATH_MESSAGES); // TODO: Re-add random kill messagse
 		}
 		ChatManager::EmoteMessage(player, message);
 	}
@@ -209,6 +210,13 @@ bool CommandVeh(Player *player, string text, vector<string> params)
 			ChatManager::SystemMessage(player, "Usage: \"/veh [Car ID] [Color 1] [Color 2]\"");
 		}
 	}
+	return true;
+}
+
+bool CommandCoalmine(Player *player, string text, vector<string> params);
+bool CommandCoalmine(Player *player, string text, vector<string> params)
+{
+	CoalmineManager::Start(player);
 	return true;
 }
 
@@ -314,6 +322,9 @@ bool CommandGoto(Player *player, string text, vector<string> params)
 	if (params.size() != 1)
 	{
 		ChatManager::SystemMessage(player, "Usage: \"/goto [Part of name or PlayerID]\"");
+		ChatManager::SystemMessage(player, "places: taxi corp1 corp2 pd lsair sfair lvair pier underwater boat mafjump skyscraper coalminer");
+		ChatManager::SystemMessage(player, "chiliad drift wheelarch locolow transfender halfpipe bridgetop lombardstreet skatepark casino skydive");
+		ChatManager::SystemMessage(player, "smokespot fc lb eq boneyard process cropdust trucker hotel1 hotel2 hotel3");
 	}
 	else
 	{
@@ -327,9 +338,11 @@ bool CommandGoto(Player *player, string text, vector<string> params)
 			player->SetInterior(otherPlayer->GetInterior());
 			player->SetVirtualWorld(otherPlayer->GetVirtualWorld());
 		}
-		else // Goto a location
+		else if (!params.empty())
 		{
+			// Default to interior 0
 			player->SetInterior(0);
+
 			if (params[0].find("taxi") != string::npos) // /goto taxi
 			{
 				player->SetPosition(Point3DMake(-300.9337, 1322.2476, 54.2912));
@@ -461,25 +474,22 @@ bool CommandGoto(Player *player, string text, vector<string> params)
 			else if (params[0].find("hotel1") != string::npos)
 			{
 				player->SetPosition(Point3DMake(2251.85, -1138.16, 1050.63));
+				player->SetInterior(9);
 			}
 			else if (params[0].find("hotel2") != string::npos)
 			{
 				player->SetPosition(Point3DMake(2259.5757, -1135.9651, 1050.6328));
+				player->SetInterior(10);
 			}
 			else if (params[0].find("hotel3") != string::npos)
 			{
 				player->SetPosition(Point3DMake(444.646911, 508.239044, 1001.419494));
+				player->SetInterior(12);
 			}
 			else if (params[0].find("ubermotors") != string::npos)
 			{
 				player->SetPosition(Point3DMake(1094.1666, 1599.0883, 12.5469));
 			} 
-			else
-			{
-				ChatManager::SystemMessage(player, "places: taxi corp1 corp2 pd lsair sfair lvair pier underwater boat mafjump skyscraper coalminer");
-				ChatManager::SystemMessage(player, "chiliad drift wheelarch locolow transfender halfpipe bridgetop lombardstreet skatepark casino skydive");
-				ChatManager::SystemMessage(player, "smokespot fc lb eq boneyard process cropdust trucker");
-			}
 		}
 	}
 
@@ -507,6 +517,68 @@ bool CommandGetHere(Player *player, string text, vector<string> params)
 
 			ChatManager::SystemMessage(otherPlayer, "You've been teleported by an admin.");
 		}
+	}
+
+	return true;
+}
+
+bool CommandRepairVehicle(Player *player, string text, vector<string> params);
+bool CommandRepairVehicle(Player *player, string text, vector<string> params)
+{
+	//int vehicleID = player->GetVehicleID();
+	//if (vehicleID == 0)
+	//{
+	//	ChatManager::SystemMessage(player, "You're not in a vehicle!");
+	//}
+	if (JobManager::GetType(player) == JobTypeWheelman || FactionManager::GetFaction(player) == PlayerFactionUber)
+	{
+		int repairTimeRemaining = JobManager::GetWheelmanRepairTime(player);
+		if (repairTimeRemaining > 0)
+		{
+			ChatManager::SystemMessage(player, "You have " + to_string(repairTimeRemaining) + " minutes remaining before you can repair again!");
+		}
+		else
+		{
+			if (params.empty())
+			{
+				// Wheelman repairing their own vehicle
+				static const int WHEELMAN_REPAIR_COST = 20; // Money
+				static const int WHEELMAN_REPAIR_TIME = 4; // Seconds
+
+				if (player->GetMoney() >= WHEELMAN_REPAIR_COST)
+				{
+					int vehicleID = player->GetVehicleID();
+					if (vehicleID != 0)
+					{
+						SetVehicleHealth(vehicleID, 1000);
+
+						// TODO: Add greasemonkey perk here
+						JobManager::SetWheelmanRepairTime(player, WHEELMAN_REPAIR_TIME);
+
+						ChatManager::SystemMessage(player, "Your vehicle was repaired for $" + to_string(WHEELMAN_REPAIR_COST));
+						ChatManager::EmoteMessage(player, player->GetName() + " repairs the " + VehicleManager::GetVehicleName(vehicleID));
+
+						player->SubtractMoney(WHEELMAN_REPAIR_COST);
+					}
+					else
+					{
+						ChatManager::SystemMessage(player, "You're not in a vehicle!");
+					}
+				}
+				else
+				{
+					ChatManager::SystemMessage(player, "You need at least $" + to_string(WHEELMAN_REPAIR_COST) + " to repair your vehicle.");
+				}
+			}
+			else
+			{
+				// Wheelman offering a repair to someone else
+			}
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You're not a wheelman!");
 	}
 
 	return true;
@@ -582,7 +654,7 @@ bool CommandFactionGiveRank(Player *player, string text, vector<string> params)
 {
 	if (FactionManager::GetRank(player) < 6)
 	{
-		ChatManager::SystemMessage(player, "This command is only available to faction players at rank 6.");
+		ChatManager::SystemMessage(player, "This command is only available to faction players at {FF0000FF}rank 6.");
 	}
 	else if (params.size() != 2)
 	{
@@ -982,7 +1054,7 @@ bool CommandManager::OnPlayerCommandText(Player *player, string commandText)
 CommandManager::CommandManager()
 {
 	//
-	// Admin
+	//		Admin
 	//
 	ADMIN_COMMAND("makeleader", CommandMakeLeader, 6);
 	ADMIN_COMMAND("givegun", CommandGiveGun, 6);
@@ -992,6 +1064,7 @@ CommandManager::CommandManager()
 	ADMIN_COMMAND("setskin", CommandSetSkin, 4);
 
 	ADMIN_COMMAND("v", CommandVeh, 2);
+	ADMIN_COMMAND("veh", CommandVeh, 2);
 
 	ADMIN_COMMAND("startevent", CommandStartEvent, 2);
 	ADMIN_COMMAND("endevent", CommandEndEvent, 2);
@@ -1005,39 +1078,39 @@ CommandManager::CommandManager()
 	//ADMIN_COMMAND("unfreeze", CommandUnFreeze, 2);
 
 	//
-	// Roleplay Chat & Emote
+	//		Roleplay Chat & Emote
 	//
 	COMMAND("me", CommandEmote);
 	COMMAND("b", CommandLocalOOC);
 	COMMAND("o", CommandOOC);
 	COMMAND("ooc", CommandOOC);
 	COMMAND("do", CommandDo);
-	//COMMAND("a", CommandAdminChat;
-	//COMMAND("s", CommandShout;
-	//COMMAND("c", CommandCloseChat
-	//COMMAND("l", CommandLocalIC;
-	//COMMAND("f", CommandFactionChat;
-	//COMMAND("m", CommandMegaphone;
-	//COMMAND("n", CommandNewbieChat;
-	//COMMAND("ad", CommandAdvertise;
-	//COMMAND("w", CommandWhisper;
+	//COMMAND("a", CommandAdminChat);
+	//COMMAND("s", CommandShout);
+	//COMMAND("c", CommandCloseChat);
+	//COMMAND("l", CommandLocalIC);
+	//COMMAND("f", CommandFactionChat);
+	//COMMAND("m", CommandMegaphone);
+	//COMMAND("n", CommandNewbieChat);
+	//COMMAND("ad", CommandAdvertise);
+	//COMMAND("w", CommandWhisper);
 	
 
 	//
-	// Player
+	//		Player
 	//
 	COMMAND("kill", CommandKill);
 	COMMAND("dance", CommandDance);
 	COMMAND("joinevent", CommandJoinEvent);
 
 	//
-	// Vehicle
+	//		Vehicle
 	//
 	COMMAND("rw", CommandToggleVehicleWindows);
 	COMMAND("windows", CommandShowVehicleWindowState);
 
 	//
-	// Faction
+	//		Faction
 	//
 	COMMAND("factions", CommandFactionList); COMMAND("families", CommandFactionList);
 	COMMAND("invite", CommandFactionInvite);
@@ -1049,14 +1122,20 @@ CommandManager::CommandManager()
 	COMMAND("giverank", CommandFactionGiveRank);
 
 	//
-	// Job
+	//		Job
 	//
 	COMMAND("cropdust", CommandCropdust);
+	COMMAND("coalmine", CommandCoalmine);
 	COMMAND("getjob", CommandGetJob);
 	COMMAND("quitjob", CommandQuitJob);
 
 	//
-	// Police
+	//		Job - Wheelman
+	//
+	COMMAND("re", CommandRepairVehicle); COMMAND("repair", CommandRepairVehicle);
+
+	//
+	//		Police
 	//
 	//COMMAND("tazer", CommandTazer);
 	//COMMAND("cuff", CommandCuff);

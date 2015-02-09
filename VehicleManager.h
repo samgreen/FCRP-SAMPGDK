@@ -10,9 +10,12 @@ class VehicleManager
 public:
 	static void CreateStartingVehicles(); // Create the initial starting vehicles on the server
 
+	static void SAMPGDK_CALL SecondTimer(int timerid, void *params);
+
 	static std::string GetVehicleName(int vehicleID);
 
 	static bool IsCropduster(int vehicleID);
+	static bool IsDumpTruck(int vehicleID);
 	static bool IsSemiTruck(int vehicleID);
 	static bool IsBoat(int vehicleID);
 	static bool IsBike(int vehicleID);

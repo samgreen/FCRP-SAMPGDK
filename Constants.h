@@ -2,6 +2,9 @@
 #include "sampgdk.h"
 #include <stdlib.h>
 
+#define SECOND_IN_MS		1000
+#define MINUTE_IN_MS		60000
+
 #define UPDATED_TIMESTAMP	__TIMESTAMP__
 // Server MOTD
 #define MOTD				"Welcome back to the revolution. Please report all bugs using the /reportbug feature."
@@ -43,15 +46,16 @@
 #define COLOR_HOTPINK 		0xFF0080FF
 #define COLOR_PINKISH 		0xFF8282AA
 
-#define RANDOM_ARRAY_ELEMENT(anArray) anArray[rand() % sizeof(anArray)]
+#define ARRAY_SIZE(anArray) ( sizeof((anArray)) / sizeof((anArray[0])) )
+#define RANDOM_ARRAY_ELEMENT(anArray) anArray[rand() % ARRAY_SIZE(anArray)]
 
 // ----- random newb spawns -----
-//float RANDOM_SPAWNS[][3] = {
-//	{  26.1551, 922.8038, 23.6378 },
-//	{ -92.5513, 970.8187, 19.9593 },
-//	{ -56.5206, 935.9814, 21.2074 },
-//	{  20.2909, 949.5159, 20.3168 }
-//};
+static float RANDOM_SPAWNS[][3] = {
+	{  26.1551f, 922.8038f, 23.6378f },
+	{ -92.5513f, 970.8187f, 19.9593f },
+	{ -56.5206f, 935.9814f, 21.2074f },
+	{  20.2909f, 949.5159f, 20.3168f }
+};
 
 // News Messages
 const char NEWS_MESSAGES[][MAX_CLIENT_MESSAGE] = {
@@ -184,7 +188,7 @@ const char VEHICLE_NAMES[][32] = {
 	"Linerunner",
 	"Pereniel",
 	"Sentinel",
-	"Dumper",
+	"Dumper", 
 	"Firetruck",
 	"Trashmaster",
 	"Stretch",
@@ -392,7 +396,7 @@ const char VEHICLE_NAMES[][32] = {
 	"Utility Trailer"
 };
 
-const char DEATH_MESSAGES[][MAX_CLIENT_MESSAGE] = {
+static const char DEATH_MESSAGES[][MAX_CLIENT_MESSAGE] = {
 	"breaks his back doing the limbo and dies",
 	"chokes on his own vomit",
 	"holds his breath until he passes out",

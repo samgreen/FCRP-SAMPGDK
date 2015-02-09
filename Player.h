@@ -68,6 +68,9 @@ public:
 	bool IsTied();
 	void SetTied(bool tied);
 
+	bool IsGagged();
+	void SetGagged(bool gagged);
+
 	void SetWantedLevel(int level);
 	int GetWantedLevel();
 
@@ -79,6 +82,7 @@ public:
 	Point3D GetPosition();
 	void SetPosition(Point3D position);
 
+	bool IsInRangeOfPlayer(float range, Player *player);
 	bool IsInRangeOfPoint(float range, Point3D point);
 	float GetDistanceFromPoint(Point3D point);
 
@@ -102,6 +106,12 @@ public:
 	void SetCropDusterCooldown(float cooldown);
 	float GetCropDusterCooldown();
 
+	int Player::IncrementCoalMiningStat();
+	int Player::GetCoalMiningStat();
+
+	void SetCoalMiningLevel(int level);
+	int GetCoalMiningLevel();
+
 protected:
 	int id;
 	std::string name;
@@ -121,8 +131,8 @@ protected:
 	int cropDusterLevel;
 	float cropDusterCooldown;
 
+	int miningStat;
 	int miningLevel;
-	float miningTime;
 
 	int truckingLevel;
 	float truckingTime;
@@ -131,5 +141,6 @@ protected:
 
 	bool isHandcuffed;
 	bool isTied;
+	bool isGagged;
 };
 

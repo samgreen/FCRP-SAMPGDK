@@ -14,7 +14,10 @@ public:
 	static void ChatManager::EmoteMessage(Player *player, std::string message);
 	static void ChatManager::LocalMessage(Player *player, std::string message);
 	static void ChatManager::WhiteMessage(Player *player, std::string message);
+	static void ChatManager::YellowMessage(Player *player, std::string message);
+	static void ChatManager::SkillMessage(Player *player, std::string message);
 	static void ChatManager::FactionMessage(Player *player, std::string message);
+	static void ChatManager::VehicleMessage(Player *player, std::string message);
 
 	static void ChatManager::ErrorMessageInvalidPlayer(Player *player);
 

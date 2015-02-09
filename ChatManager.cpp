@@ -1,5 +1,6 @@
 #include "ChatManager.h"
 #include "PlayerManager.h"
+#include "VehicleManager.h"
 #include "Player.h"
 #include "Constants.h"
 
@@ -24,27 +25,49 @@ static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
 	SendClientMessage(player->GetID(), COLOR_GRAD1, message.c_str());
 }
 
- void ChatManager::ErrorMessageInvalidPlayer(Player *player)
+ void ChatManager::VehicleMessage(Player *player, std::string message)
  {
-	 ChatManager::SystemMessage(player, "Invalid player name or ID.");
+	 int vehicleID = player->GetVehicleID();
+	 for (auto i = PlayerManager::BeginPlayer(); i != PlayerManager::EndPlayer(); i++)
+	 {
+		 Player *p = i->second;
+		 if (p->GetVehicleID() == vehicleID) {
+			 SendClientMessage(p->GetID(), COLOR_FADE1, message.c_str());
+		 }
+	 }
  }
 
- void ChatManager::EmoteMessage(Player *player, string message)
+void ChatManager::ErrorMessageInvalidPlayer(Player *player)
+ {
+	 ChatManager::SystemMessage(player, "Invalid {FFFFFF}player name or ID.");
+ }
+
+void ChatManager::EmoteMessage(Player *player, string message)
 {
 	ChatManager::ProximityMessage(player, message, EMOTE_DISTANCE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE);
 }
 
- void ChatManager::LocalMessage(Player *player, string message)
+void ChatManager::LocalMessage(Player *player, string message)
 {
 	ChatManager::ProximityMessage(player, message, MESSAGE_DISTANCE, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 }
 
- void ChatManager::WhiteMessage(Player *player, string message)
+void ChatManager::WhiteMessage(Player *player, string message)
 {
 	SendClientMessage(player->GetID(), COLOR_WHITE, message.c_str());
 }
 
- void ChatManager::FactionMessage(Player *player, string message)
+void ChatManager::SkillMessage(Player *player, string message)
+{
+	YellowMessage(player, message);
+}
+
+void ChatManager::YellowMessage(Player *player, string message)
+{
+	SendClientMessage(player->GetID(), COLOR_YELLOW, message.c_str());
+}
+
+void ChatManager::FactionMessage(Player *player, string message)
 {
 	SendClientMessage(player->GetID(), COLOR_BLUE, message.c_str());
 }
@@ -62,9 +85,9 @@ static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
 			continue;
 		}
 
-		if (inVehicle)
+		int vehicleID = player->GetVehicleID();
+		if (inVehicle && !VehicleManager::IsWindowOpen(vehicleID))
 		{
-			int vehicleID = player->GetVehicleID();
 			if (otherPlayer->IsInVehicleID(vehicleID))
 			{
 				SendClientMessage(otherPlayer->GetID(), color1, message.c_str());

@@ -1,12 +1,40 @@
 #include "JobManager.h"
+#include "sampgdk.h"
 #include "Player.h"
 
 using namespace std;
 
 static const int DEFAULT_CONTRACT_TIME = 60; // Minutes
 
-unordered_map<int, int> JobManager::playerJobContractTimeMap;
+unordered_map<int, int>		JobManager::playerJobContractTimeMap;
 unordered_map<int, JobType> JobManager::playerJobTypeMap;
+unordered_map<int, int>		JobManager::playerWheelmanRepairTimeMap;
+
+void JobManager::SecondTimer()
+{
+
+}
+
+void JobManager::MinuteTimer()
+{
+	for (auto i : playerJobContractTimeMap)
+	{
+		int time = i.second;
+		if (time > 0) {
+			playerJobContractTimeMap[i.first] = --time;
+		}
+		//sampgdk_logprintf("Player %d has %d minutes left on job contract", i.first, i.second);
+	}
+
+	for (auto i : playerWheelmanRepairTimeMap)
+	{
+		int time = i.second;
+		if (time > 0) {
+			playerWheelmanRepairTimeMap[i.first] = --time;
+		}
+		//sampgdk_logprintf("Player %d has %d minutes left on wheelman repair", i.first, i.second);
+	}
+}
 
 JobType JobManager::GetType(Player *player)
 {
@@ -55,4 +83,14 @@ Point3D JobManager::GetPoint(JobType type)
 int JobManager::GetContractTime(Player *player)
 {
 	return playerJobContractTimeMap[player->GetID()];
+}
+
+int JobManager::GetWheelmanRepairTime(Player *player)
+{
+	return playerWheelmanRepairTimeMap[player->GetID()];
+}
+
+void JobManager::SetWheelmanRepairTime(Player *player, int time)
+{
+	playerWheelmanRepairTimeMap[player->GetID()] = time;
 }

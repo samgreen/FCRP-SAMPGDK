@@ -200,12 +200,17 @@ void VehicleManager::CreateStartingVehicles()
 
 string VehicleManager::GetVehicleName(int vehicleID)
 {
-	return string(VEHICLE_NAMES[GetVehicleModel(vehicleID)]);
+	return string(VEHICLE_NAMES[GetVehicleModel(vehicleID) - 400]);
 }
 
 bool VehicleManager::IsCropduster(int vehicleID)
 {
 	return (vehicleID == 512);
+}
+
+bool VehicleManager::IsDumpTruck(int vehicleID)
+{
+	return (GetVehicleModel(vehicleID) == 406);
 }
 
 bool VehicleManager::IsSemiTruck(int vehicleID) {

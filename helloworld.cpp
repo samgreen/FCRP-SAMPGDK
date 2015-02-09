@@ -14,16 +14,24 @@
 #include "VehicleManager.h"
 #include "PickupManager.h"
 #include "PlayerManager.h"
+#include "JobManager.h"
+#include "CoalmineManager.h"
 
 using namespace std;
 
 static CommandManager *commandManager = new CommandManager;
 static PlayerManager *playerManager;
 static VehicleManager *vehicleManager;
+static CoalmineManager *coalManager;
 
-//void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params) {
-//	sampgdk::logprintf("Tick count: %d", GetTickCount());
-//}
+void SAMPGDK_CALL GlobalMinuteTimer(int timerid, void *params) {
+	JobManager::MinuteTimer();
+	CoalmineManager::MinuteTimer();
+}
+
+void SAMPGDK_CALL GlobalSecondTimer(int timerid, void *params) {
+	JobManager::SecondTimer();
+}
  
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	sampgdk::logprintf("----------------------------------");
@@ -34,7 +42,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	VehicleManager::CreateStartingVehicles();
 
 	UsePlayerPedAnims();
-	//AllowAdminTeleport(true);
 	AllowInteriorWeapons(true);
 	SetNameTagDrawDistance(10);
 	EnableStuntBonusForAll(false);
@@ -43,22 +50,24 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 
 	SetGameModeText("BC-RP v0.1 ALPHA");
 	AddPlayerClass(0, 1958.3783f, 1343.1572f, 15.3746f, 269.1425f, 0, 0, 0, 0, 0, 0);
-	//SetTimer(1000, true, PrintTickCountTimer, 0);
+
+	// Add job manager timers
+	SetTimer(SECOND_IN_MS, true, GlobalSecondTimer, 0);
+	SetTimer(MINUTE_IN_MS, true, GlobalMinuteTimer, 0);
 
 	return true;
 }
+
+// TODO: OnPlayerStateChange
+// TODO: Abort coalmine / cropdust if they exit vehicle
  
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	Player *player = new Player(playerid);
 	PlayerManager::AddPlayer(player);
 
-	//if (!player.HasValidName()) 
-	//{
-	//	SendClientMessage(player.GetID(), COLOR_RED, "This is a roleplaying server. We require names in the FirstName_LastName format.");
-	//	Kick(player.GetID());
-	//	playerList.pop_back(); // Remove the player from our list
-	//	return false; // Don't let any other code handle this callback
-	//}
+	// DEBUG
+	JobManager::SetType(player, JobTypeWheelman);
+	player->SetGagged(true);
 
 	SetPlayerInterior(playerid, 0);
 	SetPlayerPos(playerid, 163.984863f, 1213.388305f, 21.501449f);
@@ -99,10 +108,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	sampgdk_logprintf("%s has spawned.", PlayerManager::GetPlayer(playerid)->GetName().c_str());
 	
 	//int randomSpawnIndex = rand() % sizeof(RANDOM_SPAWNS);
+	//float *randomSpawn = RANDOM_ARRAY_ELEMENT(RANDOM_SPAWNS);
 	//float x = RANDOM_SPAWNS[randomSpawnIndex][0];
 	//float y = RANDOM_SPAWNS[randomSpawnIndex][1];
 	//float z = RANDOM_SPAWNS[randomSpawnIndex][2];
-	Point3D randomSpawnPoint = Point3D{ 26.1551, 922.8038, 23.6378 };
+	Point3D randomSpawnPoint = Point3D{ 26.1551f, 922.8038f, 23.6378f };
 	PlayerManager::GetPlayer(playerid)->SetPosition(randomSpawnPoint);
 
 	return false;
@@ -112,7 +122,44 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 	return commandManager->OnPlayerCommandText(PlayerManager::GetPlayer(playerid), string(cmdtext));
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid) {
+	Player *player = PlayerManager::GetPlayer(playerid);
+	CoalmineManager::OnPlayerEnterRaceCheckpoint(player);
+	return true;
+}
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
+	Player *player = PlayerManager::GetPlayer(playerid);
+	string message = player->GetName() + " says: " + string(text);
+
+	int vehicleID = player->GetVehicleID();
+	bool windowsOpen = VehicleManager::IsWindowOpen(vehicleID);
+	// TODO: Phones
+
+	// Gagged
+	if (player->IsGagged())
+	{
+		message = player->GetName() + " mumbles: " + RANDOM_ARRAY_ELEMENT(GAGGED_MESSAGES);
+	}
+	 
+	if (vehicleID != 0)
+	{
+		if (windowsOpen)
+		{
+			ChatManager::LocalMessage(player, message);
+		}
+		else
+		{
+			ChatManager::VehicleMessage(player, message);
+		} 
+	}
+	else
+	{
+		ChatManager::LocalMessage(player, message);
+	} 
+
+	// TODO: Bugs (the listening kind)
+
 	return false;
 }
 
