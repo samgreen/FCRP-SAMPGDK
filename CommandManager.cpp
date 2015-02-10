@@ -1,16 +1,6 @@
 #include "CommandManager.h"
-
 #include "sampgdk.h"
-
-#include "Util.h"
-#include "Constants.h"
-#include "ChatManager.h"
-#include "PlayerManager.h"
-#include "VehicleManager.h"
-#include "FactionManager.h"
-#include "JobManager.h"
-#include "CoalmineManager.h"
-#include "Player.h"
+#include "CommandUtil.h"
 
 using namespace std;
 

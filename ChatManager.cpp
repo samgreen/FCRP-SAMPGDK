@@ -44,7 +44,7 @@ void ChatManager::ErrorMessageInvalidPlayer(Player *player)
 
 void ChatManager::EmoteMessage(Player *player, string message)
 {
-	ChatManager::ProximityMessage(player, message, EMOTE_DISTANCE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE, COLOR_EMOTE);
+	ChatManager::ProximityMessage(player, message, EMOTE_DISTANCE, COLOR_EMOTE);
 }
 
 void ChatManager::LocalMessage(Player *player, string message)
@@ -55,6 +55,11 @@ void ChatManager::LocalMessage(Player *player, string message)
 void ChatManager::WhiteMessage(Player *player, string message)
 {
 	SendClientMessage(player->GetID(), COLOR_WHITE, message.c_str());
+}
+
+void ChatManager::OrangeMessage(Player *player, string message)
+{
+	SendClientMessage(player->GetID(), COLOR_ORANGE, message.c_str());
 }
 
 void ChatManager::SkillMessage(Player *player, string message)
@@ -72,7 +77,12 @@ void ChatManager::FactionMessage(Player *player, string message)
 	SendClientMessage(player->GetID(), COLOR_BLUE, message.c_str());
 }
 
- void ChatManager::ProximityMessage(Player *player, string message, float distance, int color1, int color2, int color3, int color4, int color5)
+void ChatManager::ProximityMessage(Player *player, string message, float distance, int color)
+{
+	ProximityMessage(player, message, distance, color, color, color, color, color);
+}
+
+void ChatManager::ProximityMessage(Player *player, string message, float distance, int color1, int color2, int color3, int color4, int color5)
 {
 	Point3D position = player->GetPosition();
 	bool inVehicle = player->IsInVehicle();
