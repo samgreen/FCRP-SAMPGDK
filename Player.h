@@ -112,6 +112,12 @@ public:
 	void SetCoalMiningLevel(int level);
 	int GetCoalMiningLevel();
 
+	void StartAnimation(const char *animationLibrary, const char *animationName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, bool forceSync);
+
+	void StartWalkAnimation(int index);
+	void StopAnimations();
+	bool IsLoopingAnimation();
+
 protected:
 	int id;
 	std::string name;
@@ -142,5 +148,6 @@ protected:
 	bool isHandcuffed;
 	bool isTied;
 	bool isGagged;
+	bool isLoopingAnimation;
 };
 

@@ -10,4 +10,5 @@ EXPORTS
 	OnPlayerCommandText
 	OnPlayerText
 	OnPlayerSpawn
+	OnPlayerKeyStateChange
 	OnPlayerEnterRaceCheckpoint

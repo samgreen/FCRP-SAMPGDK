@@ -2,6 +2,11 @@
 #include "sampgdk.h"
 #include <stdlib.h>
 
+#define ARRAY_SIZE(anArray) ( sizeof((anArray)) / sizeof((anArray[0])) )
+#define RANDOM_ARRAY_ELEMENT(anArray) anArray[rand() % ARRAY_SIZE(anArray)]
+
+#define KEY_PRESSSED_ONCE(key,newKeys,oldKeys) (((newKeys) & (key)) == (key) && ((oldKeys) & (key)) != (key))
+
 #define SECOND_IN_MS		1000
 #define MINUTE_IN_MS		60000
 
@@ -45,9 +50,6 @@
 #define COLOR_SYSTEM 		0xEFEFF7AA
 #define COLOR_HOTPINK 		0xFF0080FF
 #define COLOR_PINKISH 		0xFF8282AA
-
-#define ARRAY_SIZE(anArray) ( sizeof((anArray)) / sizeof((anArray[0])) )
-#define RANDOM_ARRAY_ELEMENT(anArray) anArray[rand() % ARRAY_SIZE(anArray)]
 
 // ----- random newb spawns -----
 static float RANDOM_SPAWNS[][3] = {

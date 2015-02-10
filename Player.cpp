@@ -55,6 +55,49 @@ int Player::GetExperience()
 	return experience;
 }
 
+void Player::StartWalkAnimation(int index)
+{
+	static const char *WALK_ANIMATIONS[] = 
+	{
+		"WALK_GANG1",
+		"WALK_GANG2",
+		"WALK_FAT",
+		"WALK_FATOLD",
+		"WALK_OLD",
+		"WOMAN_WALKNORM",
+		"WOMAN_WALKSEXY",
+		"WALK_WUZI"
+	};
+	const int MAX_WALKS = ARRAY_SIZE(WALK_ANIMATIONS);
+
+	if (index < MAX_WALKS)
+	{
+		StartAnimation("PED", WALK_ANIMATIONS[index], 4.1f, true, true, true, true, 1, true);
+	}
+}
+
+void Player::StartAnimation(const char *animationLibrary, const char *animationName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, bool forceSync)
+{
+	isLoopingAnimation = loop;
+	ApplyAnimation(id, animationLibrary, animationName, delta, loop, lockX, lockY, freeze, time, forceSync);
+
+	if (isLoopingAnimation)
+	{
+		GameTextForPlayer(id, "~p~Press the sprint key to stop the animation.", 3000, 1);
+	}
+}
+
+void Player::StopAnimations()
+{
+	//ApplyAnimation(id, "CARRY", "crry_prtial", 4.f, false, false, false, false, false, true); // clears animations
+	ClearAnimations(id, true);
+}
+
+bool Player::IsLoopingAnimation()
+{
+	return isLoopingAnimation;
+}
+
 void Player::SetHealth(int health)
 {
 	SetPlayerHealth(id, (float)health);

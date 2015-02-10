@@ -943,6 +943,34 @@ bool CommandMakeLeader(Player *player, string text, vector<string> params)
 	return true;
 }
 
+bool CommandSetWalkStyle(Player *player, string text, vector<string> params);
+bool CommandSetWalkStyle(Player *player, string text, vector<string> params)
+{
+	if (player->IsHandCuffed())
+	{
+		ChatManager::SystemMessage(player, "You cannot do that while cuffed!");
+	}
+	else
+	{
+		int style = -1;
+		if (params.size() == 1 && IsNumeric(params[0]))
+		{
+			style = stoi(params[0]);
+		}
+		
+		if (style > 0 && style < 9)
+		{
+			player->StartWalkAnimation(style);
+		}
+		else
+		{
+			ChatManager::SystemMessage(player, "USAGE: /walk [1-8]");
+		}
+	}
+
+	return true;
+}
+
 Player* CommandManager::GetPlayerFromParams(Player *player, vector<string> params, vector<string>::size_type index)
 {
 	Player *otherPlayer = CommandManager::GetPlayerFromParams(params, index);
@@ -1102,6 +1130,8 @@ CommandManager::CommandManager()
 	COMMAND("kill", CommandKill);
 	COMMAND("dance", CommandDance);
 	COMMAND("joinevent", CommandJoinEvent);
+	COMMAND("walk", CommandSetWalkStyle);
+	//COMMAND("run", CommandSetRunStyle);
 
 	//
 	//		Vehicle

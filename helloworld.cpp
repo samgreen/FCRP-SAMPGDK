@@ -65,6 +65,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	Player *player = new Player(playerid);
 	PlayerManager::AddPlayer(player);
 
+	string message = player->GetName() + " has joined the server.";
+	SendClientMessageToAll(COLOR_GOLD, message.c_str());
+
 	// DEBUG
 	JobManager::SetType(player, JobTypeWheelman);
 	player->SetGagged(true);
@@ -120,6 +123,20 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
 	return commandManager->OnPlayerCommandText(PlayerManager::GetPlayer(playerid), string(cmdtext));
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newKeys, int oldKeys) {
+	Player *player = PlayerManager::GetPlayer(playerid);
+
+	//if (KEY_PRESSSED_ONCE(KEY_SPRINT, newKeys, oldKeys))
+	//{
+	//	if (player->IsLoopingAnimation())
+	//	{
+	//		player->StopAnimations();
+	//	}
+	//}
+
+	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid) {
