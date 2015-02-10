@@ -68,6 +68,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	string message = player->GetName() + " has joined the server.";
 	SendClientMessageToAll(COLOR_GOLD, message.c_str());
 
+	string messageOfTheDay = "MOTD: " MOTD;
+	ChatManager::WhiteMessage(player, messageOfTheDay);
+
+	string welcomeGameText = "~w~Welcome ~n~~y~   " + player->GetName();
+	GameTextForPlayer(player->GetID(), welcomeGameText.c_str(), 5000, 1);
+
 	// DEBUG
 	JobManager::SetType(player, JobTypeWheelman);
 	player->SetGagged(true);
