@@ -20,9 +20,6 @@
 using namespace std;
 
 static CommandManager *commandManager = new CommandManager;
-static PlayerManager *playerManager;
-static VehicleManager *vehicleManager;
-static CoalmineManager *coalManager;
 
 void SAMPGDK_CALL GlobalMinuteTimer(int timerid, void *params) {
 	JobManager::MinuteTimer();
@@ -40,6 +37,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 
 	// Create the initial vehicles 
 	VehicleManager::CreateStartingVehicles();
+	PickupManager::CreatePickups();
 
 	UsePlayerPedAnims();
 	AllowInteriorWeapons(true);
@@ -64,6 +62,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	Player *player = new Player(playerid);
 	PlayerManager::AddPlayer(player);
+
+	SetPlayerColor(player->GetID(), 0xFFFFFF00); // Hide all players on the minimap
 
 	string message = player->GetName() + " has joined the server.";
 	SendClientMessageToAll(COLOR_GOLD, message.c_str());

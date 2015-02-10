@@ -1,7 +1,10 @@
 #include "PickupManager.h"
 #include "sampgdk.h"
 
-PickupManager::PickupManager()
+PickupManager::PickupManager() {}
+PickupManager::~PickupManager() {}
+
+void PickupManager::CreatePickups()
 {
 	// -------------- icons ------------------
 	AddStaticPickup(1239, 23, 230.9678, 1885.0745, 17.6406, 0); 		// PD entrance
@@ -80,7 +83,7 @@ PickupManager::PickupManager()
 	AddStaticPickup(1239, 23, -254.6683, 2603.5513, 62.8582, 0);		// Dis Club Enter
 }
 
-
-PickupManager::~PickupManager()
+void PickupManager::AddDefaultPickup(int modelID, float x, float y, float z)
 {
+	AddStaticPickup(modelID, 23, x, y, z, 0); 
 }
