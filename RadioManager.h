@@ -15,8 +15,8 @@ public:
 	static bool IsEnabled(Player *player);
 	static void SetEnabled(Player *player, bool enabled);
 
-	static bool IsRadioOwned(Player *player);
-	static void SetRadioOwned(Player *player, bool isOwned);
+	static bool IsOwned(Player *player);
+	static void SetOwned(Player *player, bool isOwned);
 	
 
 private:

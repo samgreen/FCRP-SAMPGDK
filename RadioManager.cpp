@@ -32,7 +32,7 @@ void RadioManager::SendMessage(Player *player, string message)
 			const bool otherRadioEnabled = enabledMap[otherPlayerIter.first];
 			if (otherRadioEnabled)
 			{
-				string radioMessage = name + "transmits (" + to_string(messageFrequency) + "Hz) " + message;
+				string radioMessage = name + " transmits (" + to_string(messageFrequency) + "Hz): " + message;
 				ChatManager::OrangeMessage(otherPlayerIter.first, radioMessage);
 			}
 		}
@@ -76,7 +76,7 @@ bool RadioManager::IsEnabled(Player *player)
 	return false;
 }
 
-bool RadioManager::IsRadioOwned(Player *player)
+bool RadioManager::IsOwned(Player *player)
 {
 	if (ownedMap.find(player) != ownedMap.end())
 	{
@@ -85,7 +85,7 @@ bool RadioManager::IsRadioOwned(Player *player)
 	return false;
 }
 
-void RadioManager::SetRadioOwned(Player *player, bool isOwned)
+void RadioManager::SetOwned(Player *player, bool isOwned)
 {
 	ownedMap[player] = true;
 }

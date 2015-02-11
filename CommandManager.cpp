@@ -961,6 +961,117 @@ bool CommandSetWalkStyle(Player *player, string text, vector<string> params)
 	return true;
 }
 
+bool CommandTurnOnRadio(Player *player, string text, vector<string> params);
+bool CommandTurnOnRadio(Player *player, string text, vector<string> params)
+{
+	if (RadioManager::IsOwned(player))
+	{
+		if (RadioManager::IsEnabled(player))
+		{
+			ChatManager::SystemMessage(player, "Your walkie talkie is already on.");
+		}
+		else
+		{
+			RadioManager::SetEnabled(player, true);
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You don't have a walkie talkie, purchase one from the 24/7.");
+	}
+	return true;
+}
+
+bool CommandTurnOffRadio(Player *player, string text, vector<string> params);
+bool CommandTurnOffRadio(Player *player, string text, vector<string> params)
+{
+	if (RadioManager::IsOwned(player))
+	{
+		if (!RadioManager::IsEnabled(player))
+		{
+			ChatManager::SystemMessage(player, "Your walkie talkie is already off.");
+		}
+		else
+		{
+			RadioManager::SetEnabled(player, false);
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You don't have a walkie talkie, purchase one from the 24/7.");
+	}
+	return true;
+}
+
+bool CommandRadioHelp(Player *player, string text, vector<string> params);
+bool CommandRadioHelp(Player *player, string text, vector<string> params)
+{
+	if (RadioManager::IsOwned(player))
+	{
+		ChatManager::WhiteMessage(player, "/rOn - Turns on your radio.");
+		ChatManager::WhiteMessage(player, "/rOff - Turns off your radio.");
+		ChatManager::WhiteMessage(player, "/rTune [Frequency] - Tunes your radio to the specified sequence.");
+		ChatManager::WhiteMessage(player, "/r [Text] - Transmits the specified message.");
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You don't have a walkie talkie, purchase one from the 24/7.");
+	}
+	return true;
+}
+
+bool CommandTuneRadio(Player *player, string text, vector<string> params);
+bool CommandTuneRadio(Player *player, string text, vector<string> params)
+{
+	if (RadioManager::IsOwned(player))
+	{
+		int frequency = -1;
+
+		if (params.size() == 1)
+		{
+			if (IsNumeric(params[0]))
+			{
+				frequency = stoi(params[0]);
+			}
+		}
+
+		if (frequency < 1000 || frequency > 10000)
+		{
+			ChatManager::SystemMessage(player, "You may only tune your walkie talkie from 1000Hz to 10000Hz");
+		}
+		else
+		{
+			RadioManager::SetRadioFrequency(player, frequency);
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You don't have a walkie talkie, purchase one from the 24/7.");
+	}
+	return true;
+}
+
+bool CommandRadioChat(Player *player, string text, vector<string> params);
+bool CommandRadioChat(Player *player, string text, vector<string> params)
+{
+	if (RadioManager::IsOwned(player))
+	{
+		if (RadioManager::IsEnabled(player))
+		{
+			RadioManager::SendMessage(player, text);
+		}
+		else
+		{
+			ChatManager::SystemMessage(player, "Your walkie talkie is disabled. Use /ron to turn it on.");
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "You don't have a walkie talkie, purchase one from the 24/7.");
+	}
+	return true;
+}
+
 Player* CommandManager::GetPlayerFromParams(Player *player, vector<string> params, vector<string>::size_type index)
 {
 	Player *otherPlayer = CommandManager::GetPlayerFromParams(params, index);
@@ -1122,6 +1233,16 @@ CommandManager::CommandManager()
 	COMMAND("joinevent", CommandJoinEvent);
 	COMMAND("walk", CommandSetWalkStyle);
 	//COMMAND("run", CommandSetRunStyle);
+
+	//
+	//		Radio
+	//
+	COMMAND("ron", CommandTurnOnRadio);
+	COMMAND("roff", CommandTurnOffRadio);
+	COMMAND("rhelp", CommandRadioHelp);
+	COMMAND("rtune", CommandTuneRadio);
+	COMMAND("r", CommandRadioChat);
+
 
 	//
 	//		Vehicle

@@ -16,6 +16,7 @@
 #include "PlayerManager.h"
 #include "JobManager.h"
 #include "CoalmineManager.h"
+#include "RadioManager.h"
 
 using namespace std;
 
@@ -76,7 +77,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 
 	// DEBUG
 	JobManager::SetType(player, JobTypeWheelman);
-	player->SetGagged(true);
+	RadioManager::SetOwned(player, true);
 
 	SetPlayerInterior(playerid, 0);
 	SetPlayerPos(playerid, 163.984863f, 1213.388305f, 21.501449f);
