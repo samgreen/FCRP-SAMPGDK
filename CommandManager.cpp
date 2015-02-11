@@ -961,6 +961,34 @@ bool CommandSetWalkStyle(Player *player, string text, vector<string> params)
 	return true;
 }
 
+bool CommandSetRunStyle(Player *player, string text, vector<string> params);
+bool CommandSetRunStyle(Player *player, string text, vector<string> params)
+{
+	if (player->IsHandCuffed())
+	{
+		ChatManager::SystemMessage(player, "You cannot do that while cuffed!");
+	}
+	else
+	{
+		int style = -1;
+		if (params.size() == 1 && IsNumeric(params[0]))
+		{
+			style = stoi(params[0]);
+		}
+
+		if (style > 0 && style < 8)
+		{
+			player->StartRunAnimation(style);
+		}
+		else
+		{
+			ChatManager::SystemMessage(player, "USAGE: /run [1-7]");
+		}
+	}
+
+	return true;
+}
+
 bool CommandTurnOnRadio(Player *player, string text, vector<string> params);
 bool CommandTurnOnRadio(Player *player, string text, vector<string> params)
 {
@@ -1240,7 +1268,7 @@ CommandManager::CommandManager()
 	COMMAND("dance", CommandDance);
 	COMMAND("joinevent", CommandJoinEvent);
 	COMMAND("walk", CommandSetWalkStyle);
-	//COMMAND("run", CommandSetRunStyle);
+	COMMAND("run", CommandSetRunStyle);
 
 	//
 	//		Radio

@@ -76,6 +76,26 @@ void Player::StartWalkAnimation(int index)
 	}
 }
 
+void Player::StartRunAnimation(int index)
+{
+	static const char *RUN_ANIMATIONS[] =
+	{
+		"FATRUN",
+		"MUSCLERUN",
+		"RUN_CIVI",
+		"RUN_OLD",
+		"RUN_GANG1",
+		"WOMAN_RUN",
+		"WOMAN_RUNPANIC"
+	};
+	const int MAX_RUNS = ARRAY_SIZE(RUN_ANIMATIONS);
+
+	if (index < MAX_RUNS)
+	{
+		StartAnimation("PED", RUN_ANIMATIONS[index], 4.1f, true, true, true, true, 1, true);
+	}
+}
+
 void Player::StartAnimation(const char *animationLibrary, const char *animationName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, bool forceSync)
 {
 	isLoopingAnimation = loop;

@@ -115,6 +115,7 @@ public:
 	void StartAnimation(const char *animationLibrary, const char *animationName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, bool forceSync);
 
 	void StartWalkAnimation(int index);
+	void StartRunAnimation(int index);
 	void StopAnimations();
 	bool IsLoopingAnimation();
 
