@@ -1041,7 +1041,15 @@ bool CommandTuneRadio(Player *player, string text, vector<string> params)
 		}
 		else
 		{
-			RadioManager::SetRadioFrequency(player, frequency);
+			PlayerFaction faction = FactionManager::GetFaction(player);
+			if (frequency == 9111 && (faction != PlayerFactionPolice && faction != PlayerFactionEMT))
+			{
+				ChatManager::SystemMessage(player, "This frequency is reserved for emergency use only.");
+			}
+			else
+			{
+				RadioManager::SetRadioFrequency(player, frequency);
+			}
 		}
 	}
 	else

@@ -25,6 +25,9 @@ void RadioManager::SendMessage(Player *player, string message)
 
 	for (auto otherPlayerIter : frequencyMap)
 	{
+		// Skip iterating over ourselves, so we don't have duplicate messages
+		if (otherPlayerIter.first == player) continue;
+
 		// Do the frequencies match?
 		if (otherPlayerIter.second == messageFrequency)
 		{
@@ -47,7 +50,7 @@ void RadioManager::SetRadioFrequency(Player *player, int frequency)
 	frequencyMap[player] = frequency;
 
 	ChatManager::SystemMessage(player, "You have tuned your walkie talkie to " + to_string(frequency) + "Hz.");
-	ChatManager::EmoteMessage(player, player->GetName() + " fiddles with their radio, ajusting the frequency.");
+	ChatManager::EmoteMessage(player, player->GetName() + " fiddles with their radio, adjusting the frequency.");
 }
 
 void RadioManager::SetEnabled(Player *player, bool enabled)
