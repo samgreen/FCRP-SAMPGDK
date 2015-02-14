@@ -75,6 +75,23 @@ void CoalmineManager::MinuteTimer()
 	}
 }
 
+bool CoalmineManager::IsMining(Player *player)
+{
+	return CheckTime(player);
+}
+
+void CoalmineManager::OnPlayerExitVehicle(Player *player)
+{
+	int currentCheckPointIndex = currentCheckPoint[player->GetID()];
+	if (currentCheckPointIndex > 0)
+	{
+		currentCheckPoint[player->GetID()] = 0;
+
+		SendClientMessage(player->GetID(), COLOR_RED, "You've exited your dumper ending your coal delivery!");
+		DisablePlayerRaceCheckpoint(player->GetID());
+	}
+}
+
 void CoalmineManager::OnPlayerEnterRaceCheckpoint(Player *player)
 {
 	int currentCheckPointIndex = currentCheckPoint[player->GetID()];

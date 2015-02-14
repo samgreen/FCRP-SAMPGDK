@@ -146,6 +146,23 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newKeys,
 	return true;
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStateChange(int playerid, int newState, int oldState) {
+	Player *player = PlayerManager::GetPlayer(playerid);
+
+	if (oldState == PLAYER_STATE_ONFOOT && (newState == PLAYER_STATE_DRIVER || newState == PLAYER_STATE_PASSENGER)) // Player entered a vehicle
+	{
+
+	}
+	else if (oldState == PLAYER_STATE_DRIVER && newState == PLAYER_STATE_ONFOOT) // Player exited a vehicle
+	{
+		CoalmineManager::OnPlayerExitVehicle(player);
+	}
+	
+	sampgdk_logprintf("Player %s state changed from %d to %d", player->GetName().c_str(), newState, oldState);
+
+	return true;
+}
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid) {
 	Player *player = PlayerManager::GetPlayer(playerid);
 	CoalmineManager::OnPlayerEnterRaceCheckpoint(player);

@@ -9,7 +9,9 @@ public:
 	static void Start(Player *player);
 	static void MinuteTimer();
 
+	static bool IsMining(Player *player);
 	static void OnPlayerEnterRaceCheckpoint(Player *player);
+	static void OnPlayerExitVehicle(Player *player);
 
 private:
 	CoalmineManager();

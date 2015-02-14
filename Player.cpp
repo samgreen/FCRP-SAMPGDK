@@ -6,7 +6,8 @@ using namespace std;
 
 Player::Player() : Player(-1) {}
 
-Player::Player(int id) : id(id), level(1), adminLevel(0), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f), miningLevel(0), miningStat(0)
+Player::Player(int id) : id(id), level(1), adminLevel(10), money(500), bankMoney(1500), skin(170), isTied(false), isHandcuffed(false), cropDusterLevel(0), cropDusterCooldown(0.f), miningLevel(0), miningStat(0),
+						 isGagged(false)
 {
 	SetPlayerSkin(id, skin);
 	AddMoney(100000);
