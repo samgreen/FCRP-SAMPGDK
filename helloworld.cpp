@@ -16,6 +16,7 @@
 #include "PlayerManager.h"
 #include "JobManager.h"
 #include "CoalmineManager.h"
+#include "SkinManager.h"
 #include "RadioManager.h"
 
 using namespace std;
@@ -133,6 +134,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newKeys, int oldKeys) {
+	sampgdk_logprintf("Old keys: %d", oldKeys);
+	sampgdk_logprintf("New keys: %d", newKeys);
+
 	Player *player = PlayerManager::GetPlayer(playerid);
 
 	//if (KEY_PRESSSED_ONCE(KEY_SPRINT, newKeys, oldKeys))
@@ -142,6 +146,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newKeys,
 	//		player->StopAnimations();
 	//	}
 	//}
+	
+	if (KEY_PRESSSED_ONCE(KEY_FIRE, newKeys, oldKeys))
+	{
+		SkinManager::NextSkin(player);
+		SendClientMessage(player->GetID(), COLOR_WHITE, "RIGHT");
+	}
+	else if (KEY_PRESSSED_ONCE(KEY_SECONDARY_ATTACK, newKeys, oldKeys))
+	{
+		SkinManager::PreviousSkin(player);
+		SendClientMessage(player->GetID(), COLOR_WHITE, "Left");
+	}
 
 	return true;
 }
