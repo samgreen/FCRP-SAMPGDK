@@ -13,6 +13,7 @@ public:
 	static void SAMPGDK_CALL SecondTimer(int timerid, void *params);
 
 	static std::string GetVehicleName(int vehicleID);
+	static int GetVehicleIDFromName(std::string name);
 
 	static bool IsCropduster(int vehicleID);
 	static bool IsDumpTruck(int vehicleID);

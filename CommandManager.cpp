@@ -4,15 +4,6 @@
 
 using namespace std;
 
-static string ToLowerCase(string input);
-static string ToLowerCase(string input)
-{
-	string output;
-	// Transform commandInput to lowercase in command
-	transform(input.cbegin(), input.cend(), back_inserter(output), tolower);
-	return output;
-}
-
 bool CommandEmote(Player *player, string text, vector<string> params);
 bool CommandEmote(Player *player, string text, vector<string> params)
 {
@@ -195,33 +186,47 @@ bool CommandVeh(Player *player, string text, vector<string> params)
 		//	return SystemMsg(playerid, "   Invalid vehicle model name/ID");
 		//else
 		//{
-		if (params.size() == 3 && IsNumeric(params[0]) && IsNumeric(params[1]) && IsNumeric(params[2]))
+		if (params.size() == 3 && IsNumeric(params[1]) && IsNumeric(params[2]))
 		{
 			string carIDString = params[0];
 			string color1String = params[1];
 			string color2String = params[2];
 
-			int carID = stoi(carIDString);			
-			int color1 = stoi(color1String);
-			int color2 = stoi(color2String);
+			int carID = -1;
+			if (IsNumeric(params[0]))
+			{
+				carID = stoi(carIDString);
+			}
+			else
+			{
+				carID = VehicleManager::GetVehicleIDFromName(params[0]);
+			}
 
-			Point3D position = player->GetPosition();
-			float angle = player->GetFacingAngle();
-			int vehicleID = CreateVehicle(carID, position.x, position.y, position.z, angle, color1, color2, 600000);
-			int interiorID = player->GetInterior();
-			LinkVehicleToInterior(vehicleID, interiorID);
+			if (carID != -1)
+			{
+				int color1 = stoi(color1String);
+				int color2 = stoi(color2String);
 
-			//CreatedCars[CreatedCar] = carid;
-			//CreatedCar++;
-			PutPlayerInVehicle(player->GetID(), vehicleID, 0);
-			//new carname[56], string[256];
-			//carname = GetVehicleName(carid);
-			//format(string, sizeof(string), "[AdmCmd] %s(ID: %d) spawned by %s.", VehicleName[GetVehicleModel(carid) - 400], carid, Name(playerid));
-			//AdminBroadcast(COLOR_YELLOW, string);
+				Point3D position = player->GetPosition();
+				float angle = player->GetFacingAngle();
+				int vehicleID = CreateVehicle(carID, position.x, position.y, position.z, angle, color1, color2, 600000);
+				int interiorID = player->GetInterior();
+				LinkVehicleToInterior(vehicleID, interiorID);
+
+				//CreatedCars[CreatedCar] = carid;
+				//CreatedCar++;
+
+				PutPlayerInVehicle(player->GetID(), vehicleID, 0);
+				ChatManager::AdminMessage(VehicleManager::GetVehicleName(carID) + " - ID: " + to_string(vehicleID) + " spawned by " + player->GetName());
+			}
+			else
+			{
+				ChatManager::UsageMessage(player, "/veh [Car ID] [Color 1] [Color 2]");
+			}
 		} 
 		else
 		{
-			ChatManager::SystemMessage(player, "Usage: \"/veh [Car ID] [Color 1] [Color 2]\"");
+			ChatManager::UsageMessage(player, "/veh [Car ID] [Color 1] [Color 2]");
 		}
 	}
 	return true;

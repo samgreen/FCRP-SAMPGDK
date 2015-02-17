@@ -13,11 +13,12 @@ static const float EMOTE_DISTANCE	= MESSAGE_DISTANCE - 2.f;
 
  void ChatManager::AdminMessage(string message)
 {
+	string adminMessage = "[Admin] " + message;
 	for (auto i = PlayerManager::BeginPlayer(); i != PlayerManager::EndPlayer(); i++)
 	{
 		Player *p = i->second;
 		if (p->GetAdminLevel() > 0) {
-			SendClientMessage(p->GetID(), COLOR_YELLOW, message.c_str());
+			SendClientMessage(p->GetID(), COLOR_YELLOW, adminMessage.c_str());
 		}
 	}
 }
@@ -28,9 +29,15 @@ static const float EMOTE_DISTANCE	= MESSAGE_DISTANCE - 2.f;
 	 ChatManager::ProximityMessage(player, message, GAGGED_DISTANCE, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
  }
 
- void ChatManager::SystemMessage(Player *player, string message)
+void ChatManager::SystemMessage(Player *player, string message)
 {
 	SendClientMessage(player->GetID(), COLOR_GRAD1, message.c_str());
+}
+
+void ChatManager::UsageMessage(Player *player, string message)
+{
+	string fullMessage = "Usage: \"" + message + "\"";
+	SendClientMessage(player->GetID(), COLOR_GRAD1, fullMessage.c_str());
 }
 
  void ChatManager::VehicleMessage(Player *player, std::string message)

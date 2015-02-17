@@ -12,6 +12,7 @@ public:
 	static void ChatManager::AdminMessage(std::string message);
 	static void ChatManager::GaggedMessage(Player *player);
 
+	static void ChatManager::UsageMessage(Player *player, std::string message);
 	static void ChatManager::SystemMessage(Player *player, std::string message);
 	static void ChatManager::EmoteMessage(Player *player, std::string message);
 	static void ChatManager::LocalMessage(Player *player, std::string message);

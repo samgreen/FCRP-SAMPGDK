@@ -1,5 +1,6 @@
 #include "VehicleManager.h"
 #include "Constants.h"
+#include "Util.h"
 #include "sampgdk.h"
 
 using namespace std;
@@ -201,6 +202,21 @@ void VehicleManager::CreateStartingVehicles()
 string VehicleManager::GetVehicleName(int vehicleID)
 {
 	return string(VEHICLE_NAMES[GetVehicleModel(vehicleID) - 400]);
+}
+
+int VehicleManager::GetVehicleIDFromName(std::string name)
+{
+	string lowerName = ToLowerCase(name);
+	for (auto i = 0; i < ARRAY_SIZE(VEHICLE_NAMES); i++)
+	{
+		string vehicleName = VEHICLE_NAMES[i];
+		if (lowerName.compare(ToLowerCase(vehicleName)) == 0)
+		{
+			return 400 + i;
+		}
+	}
+
+	return -1;
 }
 
 bool VehicleManager::IsCropduster(int vehicleID)

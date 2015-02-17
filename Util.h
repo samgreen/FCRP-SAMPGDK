@@ -34,3 +34,12 @@ static bool AdminLevelCheck(Player *player, int level)
 	}
 	return authorized;
 }
+
+static std::string ToLowerCase(std::string input);
+static std::string ToLowerCase(std::string input)
+{
+	std::string output;
+	// Transform commandInput to lowercase in command
+	transform(input.cbegin(), input.cend(), back_inserter(output), tolower);
+	return output;
+}

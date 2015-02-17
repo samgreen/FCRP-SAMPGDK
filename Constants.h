@@ -186,7 +186,7 @@ const char WEAPON_NAMES[][32] =
 	"Collision"
 };
 
-const char VEHICLE_NAMES[][32] = {
+const std::string VEHICLE_NAMES[] = {
 	"Landstalker",
 	"Bravura",
 	"Buffalo",
