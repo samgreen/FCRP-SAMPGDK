@@ -62,6 +62,9 @@ public:
 
 	int AddSpamTime(int addedTime);
 
+	bool IsSpawned();
+	void SetSpawned(bool spawned);
+
 	bool IsHandCuffed();
 	void SetHandCuffed(bool cuffed);
 
@@ -146,6 +149,7 @@ protected:
 
 	float connectedTime;
 
+	bool isSpawned;
 	bool isHandcuffed;
 	bool isTied;
 	bool isGagged;

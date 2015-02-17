@@ -30,6 +30,7 @@
 #define COLOR_FADE4 		0x8C8C8C8C
 #define COLOR_FADE5 		0x6E6E6E6E
 
+#define COLOR_TRANSPARENT	0xFFFFFF00
 #define COLOR_MAGENTA 		0xFF00FFFF
 #define COLOR_GRAD1 		0xB4B5B7FF
 #define COLOR_GREEN 		0x33AA33AA
@@ -50,6 +51,8 @@
 #define COLOR_SYSTEM 		0xEFEFF7AA
 #define COLOR_HOTPINK 		0xFF0080FF
 #define COLOR_PINKISH 		0xFF8282AA
+
+#define COLOR_POLICE		COLOR_BLUE
 
 // ----- random newb spawns -----
 static float RANDOM_SPAWNS[][3] = {

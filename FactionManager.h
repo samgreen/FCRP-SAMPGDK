@@ -38,6 +38,7 @@ public:
 	static int GetSkin(PlayerFaction faction, int index);
 
 	static PlayerFaction GetFaction(Player *player);
+	static bool IsInSameFaction(Player *player, Player *otherPlayer);
 
 	static int GetRank(Player *player);
 	static void SetRank(Player *player, int rank);

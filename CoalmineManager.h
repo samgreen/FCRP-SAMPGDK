@@ -11,6 +11,7 @@ public:
 
 	static bool IsMining(Player *player);
 	static void OnPlayerEnterRaceCheckpoint(Player *player);
+	static void OnPlayerEnterVehicle(Player *player);
 	static void OnPlayerExitVehicle(Player *player);
 
 private:

@@ -134,31 +134,25 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newKeys, int oldKeys) {
-	sampgdk_logprintf("Old keys: %d", oldKeys);
-	sampgdk_logprintf("New keys: %d", newKeys);
+	//sampgdk_logprintf("Old keys: %d", oldKeys);
+	//sampgdk_logprintf("New keys: %d", newKeys);
 
 	Player *player = PlayerManager::GetPlayer(playerid);
-
-	//if (KEY_PRESSSED_ONCE(KEY_SPRINT, newKeys, oldKeys))
+	//if (!player->IsSpawned())
 	//{
-	//	if (player->IsLoopingAnimation())
+	//	if (KEY_PRESSSED_ONCE(KEY_FIRE, newKeys, oldKeys))
 	//	{
-	//		player->StopAnimations();
+	//		SkinManager::NextSkin(player);
+	//		SendClientMessage(player->GetID(), COLOR_WHITE, "RIGHT");
+	//	}
+	//	else if (KEY_PRESSSED_ONCE(KEY_SECONDARY_ATTACK, newKeys, oldKeys))
+	//	{
+	//		SkinManager::PreviousSkin(player);
+	//		SendClientMessage(player->GetID(), COLOR_WHITE, "Left");
 	//	}
 	//}
-	
-	if (KEY_PRESSSED_ONCE(KEY_FIRE, newKeys, oldKeys))
-	{
-		SkinManager::NextSkin(player);
-		SendClientMessage(player->GetID(), COLOR_WHITE, "RIGHT");
-	}
-	else if (KEY_PRESSSED_ONCE(KEY_SECONDARY_ATTACK, newKeys, oldKeys))
-	{
-		SkinManager::PreviousSkin(player);
-		SendClientMessage(player->GetID(), COLOR_WHITE, "Left");
-	}
 
-	return true;
+	return true; 
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStateChange(int playerid, int newState, int oldState) {
@@ -197,22 +191,24 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	{
 		message = player->GetName() + " mumbles: " + RANDOM_ARRAY_ELEMENT(GAGGED_MESSAGES);
 	}
-	 
-	if (vehicleID != 0)
+	else
 	{
-		if (windowsOpen)
+		if (vehicleID != 0)
 		{
-			ChatManager::LocalMessage(player, message);
+			if (windowsOpen)
+			{
+				ChatManager::LocalMessage(player, message);
+			}
+			else
+			{
+				ChatManager::VehicleMessage(player, message);
+			}
 		}
 		else
 		{
-			ChatManager::VehicleMessage(player, message);
-		} 
+			ChatManager::LocalMessage(player, message);
+		}
 	}
-	else
-	{
-		ChatManager::LocalMessage(player, message);
-	} 
 
 	// TODO: Bugs (the listening kind)
 

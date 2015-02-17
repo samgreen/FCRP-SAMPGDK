@@ -63,6 +63,11 @@ void FactionManager::AddLeader(Player *player, PlayerFaction faction)
 	return PlayerFactionCivilian;
 }
 
+bool FactionManager::IsInSameFaction(Player *player, Player *otherPlayer)
+{
+	return GetFaction(player) == GetFaction(otherPlayer);
+}
+
 int FactionManager::GetRank(Player *player)
 {
 	auto index = playerFactionRankMap.find(player->GetID());

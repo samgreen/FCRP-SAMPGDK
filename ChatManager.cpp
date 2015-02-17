@@ -7,7 +7,9 @@
 using namespace std;
 
 static const float MESSAGE_DISTANCE = 20.f;
-static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
+static const float SHOUT_DISTANCE	= 40.f;
+static const float GAGGED_DISTANCE	= 10.f;
+static const float EMOTE_DISTANCE	= MESSAGE_DISTANCE - 2.f;
 
  void ChatManager::AdminMessage(string message)
 {
@@ -19,6 +21,12 @@ static const float EMOTE_DISTANCE = MESSAGE_DISTANCE - 2.f;
 		}
 	}
 }
+
+ void ChatManager::GaggedMessage(Player *player)
+ {
+	 string message = player->GetName() + " mumbles: " + RANDOM_ARRAY_ELEMENT(GAGGED_MESSAGES);
+	 ChatManager::ProximityMessage(player, message, GAGGED_DISTANCE, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+ }
 
  void ChatManager::SystemMessage(Player *player, string message)
 {
@@ -50,6 +58,11 @@ void ChatManager::EmoteMessage(Player *player, string message)
 void ChatManager::LocalMessage(Player *player, string message)
 {
 	ChatManager::ProximityMessage(player, message, MESSAGE_DISTANCE, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+}
+
+void ChatManager::ShoutMessage(Player *player, std::string message)
+{
+	ChatManager::ProximityMessage(player, message, SHOUT_DISTANCE, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 }
 
 void ChatManager::WhiteMessage(Player *player, string message)

@@ -29,6 +29,30 @@ bool CommandEmote(Player *player, string text, vector<string> params)
 	return true; 
 }
 
+bool CommandShout(Player *player, string text, vector<string> params);
+bool CommandShout(Player *player, string text, vector<string> params)
+{
+	if (params.empty())
+	{
+		ChatManager::SystemMessage(player, "Usage: \"/shout [text]\"");
+	}
+	else
+	{
+		if (player->IsGagged())
+		{
+			ChatManager::GaggedMessage(player);
+		}
+		else
+		{
+			string shoutMessage = player->GetName() + " shouts: " + text;
+			ChatManager::ShoutMessage(player, shoutMessage);
+		}
+	}
+
+	return true;
+}
+
+
 bool CommandDo(Player *player, string text, vector<string> params);
 bool CommandDo(Player *player, string text, vector<string> params)
 {
@@ -117,7 +141,7 @@ bool CommandKill(Player *player, string text, vector<string> params)
 
 		string message = text;
 		if (text.empty()) {
-			message = player->GetName() + string(" ") + RANDOM_ARRAY_ELEMENT(DEATH_MESSAGES); // TODO: Re-add random kill messagse
+			message = player->GetName() + " " + RANDOM_ARRAY_ELEMENT(DEATH_MESSAGES); // TODO: Re-add random kill messagse
 		}
 		ChatManager::EmoteMessage(player, message);
 	}
@@ -171,13 +195,13 @@ bool CommandVeh(Player *player, string text, vector<string> params)
 		//	return SystemMsg(playerid, "   Invalid vehicle model name/ID");
 		//else
 		//{
-		if (params.size() == 3)
+		if (params.size() == 3 && IsNumeric(params[0]) && IsNumeric(params[1]) && IsNumeric(params[2]))
 		{
 			string carIDString = params[0];
 			string color1String = params[1];
 			string color2String = params[2];
 
-			int carID = stoi(carIDString);
+			int carID = stoi(carIDString);			
 			int color1 = stoi(color1String);
 			int color2 = stoi(color2String);
 
@@ -194,12 +218,62 @@ bool CommandVeh(Player *player, string text, vector<string> params)
 			//carname = GetVehicleName(carid);
 			//format(string, sizeof(string), "[AdmCmd] %s(ID: %d) spawned by %s.", VehicleName[GetVehicleModel(carid) - 400], carid, Name(playerid));
 			//AdminBroadcast(COLOR_YELLOW, string);
-		}
+		} 
 		else
 		{
 			ChatManager::SystemMessage(player, "Usage: \"/veh [Car ID] [Color 1] [Color 2]\"");
 		}
 	}
+	return true;
+}
+
+bool CommandRequestBackup(Player *player, string text, vector<string> params);
+bool CommandRequestBackup(Player *player, string text, vector<string> params)
+{
+	PlayerFaction faction = FactionManager::GetFaction(player);
+	if (faction == PlayerFactionPolice)
+	{
+		string message = "Dispatch: Attention all units! " + player->GetName() + " is requesting immediate backup at their location.";
+		for (auto iter = PlayerManager::BeginPlayer(); iter != PlayerManager::EndPlayer(); iter++)
+		{
+			Player *otherPlayer = iter->second;
+			if (FactionManager::IsInSameFaction(player, otherPlayer))
+			{
+				SendClientMessage(otherPlayer->GetID(), COLOR_POLICE, message.c_str());
+				SetPlayerMarkerForPlayer(otherPlayer->GetID(), player->GetID(), COLOR_POLICE);
+			}
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "This command is only available to police officers.");
+	}
+
+	return true;
+}
+
+bool CommandCancelRequestBackup(Player *player, string text, vector<string> params);
+bool CommandCancelRequestBackup(Player *player, string text, vector<string> params)
+{
+	PlayerFaction faction = FactionManager::GetFaction(player);
+	if (faction == PlayerFactionPolice)
+	{
+		string message = "Dispatch: Attention all units! " + player->GetName() + " is reporting a 10-22. Disregard the last assignment.";
+		for (auto iter = PlayerManager::BeginPlayer(); iter != PlayerManager::EndPlayer(); iter++)
+		{
+			Player *otherPlayer = iter->second;
+			if (FactionManager::IsInSameFaction(player, otherPlayer))
+			{
+				SendClientMessage(otherPlayer->GetID(), COLOR_POLICE, message.c_str());
+				SetPlayerMarkerForPlayer(otherPlayer->GetID(), player->GetID(), COLOR_TRANSPARENT);
+			}
+		}
+	}
+	else
+	{
+		ChatManager::SystemMessage(player, "This command is only available to police officers.");
+	}
+
 	return true;
 }
 
@@ -1251,7 +1325,7 @@ CommandManager::CommandManager()
 	COMMAND("ooc", CommandOOC);
 	COMMAND("do", CommandDo);
 	//COMMAND("a", CommandAdminChat);
-	//COMMAND("s", CommandShout);
+	COMMAND("s", CommandShout);
 	//COMMAND("c", CommandCloseChat);
 	//COMMAND("l", CommandLocalIC);
 	//COMMAND("f", CommandFactionChat);
@@ -1326,8 +1400,8 @@ CommandManager::CommandManager()
 	//COMMAND("confiscate", CommandConfiscate);
 	//COMMAND("clear", CommandClearWantedLevel);
 	//COMMAND("rb", CommandCreateRoadBlock);
-	//COMMAND("bk", CommandRequestBackup);
-	//COMMAND("bkcancel", CommandCancelRequestBackup);
+	COMMAND("bk", CommandRequestBackup); COMMAND("backup", CommandRequestBackup);
+	COMMAND("bkcancel", CommandCancelRequestBackup); COMMAND("backupcancel", CommandCancelRequestBackup);
 	//COMMAND("impound", CommandImpound);
 	//COMMAND("residence", CommandShowResidence);
 

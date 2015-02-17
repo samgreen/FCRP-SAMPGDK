@@ -45,6 +45,16 @@ int Player::GetAdminLevel()
 	return adminLevel;
 }
 
+bool Player::IsSpawned()
+{
+	return isSpawned;
+}
+
+void Player::SetSpawned(bool spawned)
+{
+	isSpawned = spawned;
+}
+
 int Player::AddExperience(int addedExperience)
 {
 	experience += addedExperience;

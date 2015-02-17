@@ -80,6 +80,11 @@ bool CoalmineManager::IsMining(Player *player)
 	return CheckTime(player);
 }
 
+void CoalmineManager::OnPlayerEnterVehicle(Player *player)
+{
+	Start(player);
+}
+
 void CoalmineManager::OnPlayerExitVehicle(Player *player)
 {
 	int currentCheckPointIndex = currentCheckPoint[player->GetID()];
