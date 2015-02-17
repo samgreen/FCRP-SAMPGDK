@@ -9,7 +9,7 @@ bool CommandEmote(Player *player, string text, vector<string> params)
 {
 	if (params.empty()) 
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/me [emote]\"");
+		ChatManager::UsageMessage(player, "/me [emote]");
 	}
 	else
 	{
@@ -25,7 +25,7 @@ bool CommandShout(Player *player, string text, vector<string> params)
 {
 	if (params.empty())
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/shout [text]\"");
+		ChatManager::UsageMessage(player, "/shout [text]");
 	}
 	else
 	{
@@ -49,7 +49,7 @@ bool CommandDo(Player *player, string text, vector<string> params)
 {
 	if (params.empty())
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/do [action]\"");
+		ChatManager::UsageMessage(player, "/do [action]");
 	}
 	else
 	{
@@ -65,7 +65,7 @@ bool CommandLocalOOC(Player *player, string text, vector<string> params)
 {
 	if (params.empty())
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/b [text] (local OOC)\"");
+		ChatManager::UsageMessage(player, "/b [text] (local OOC)");
 	}
 	else
 	{
@@ -81,7 +81,7 @@ bool CommandOOC(Player *player, string text, vector<string> params)
 {
 	if (params.empty())
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/o [text] (global OOC)\"");
+		ChatManager::UsageMessage(player, "/o [text] (global OOC)");
 	}
 	else
 	{
@@ -114,7 +114,7 @@ bool CommandGiveGun(Player *player, string text, vector<string> params)
 	}
 	else 
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/givegun [PlayerID] [WeaponID]\"");
+		ChatManager::UsageMessage(player, "/givegun [PlayerID] [WeaponID]");
 		ChatManager::SystemMessage(player, "IDs: 1 knuckles |2 club |3 baton |4 knife |5 bat |6 shovel |7 cue |8 sword |9 chainsaw |10 13 dildos |14 flowers |15 cane");
 		ChatManager::SystemMessage(player, "		16 grenade |17 smoke |18 molotov |22 pistol |23 sdpistol |24 deagle |25 shotgun |26 sawnoff |27 spas |28 uzi |29 mp5");
 		ChatManager::SystemMessage(player, "		30 AK |31 M4 |32 tec9 |33 rifle |34 sniper |35 rpg |36 rpg |37 flamethrower |38 minigun |41 paint |42 extinguisher");
@@ -166,7 +166,7 @@ bool CommandDance(Player *player, string text, vector<string> params)
 		case 2: SetPlayerSpecialAction(player->GetID(), SPECIAL_ACTION_DANCE2); break;
 		case 3: SetPlayerSpecialAction(player->GetID(), SPECIAL_ACTION_DANCE3); break;
 		case 4: SetPlayerSpecialAction(player->GetID(), SPECIAL_ACTION_DANCE4); break;
-		default: SendClientMessage(player->GetID(), 0xEFEFF7AA, "USAGE: /dance [1-4]"); break;
+		default: ChatManager::UsageMessage(player, "/dance [1-4]"); break;
 		}
 	}
 	return true;
@@ -329,7 +329,7 @@ bool CommandSetHealth(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/sethp [Part of name or PlayerID] [HP]\"");
+		ChatManager::UsageMessage(player, "/sethp [Part of name or PlayerID] [HP]");
 	}
 	else
 	{
@@ -350,7 +350,7 @@ bool CommandSetArmor(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/setarmor [Part of name or PlayerID] [Armor]\"");
+		ChatManager::UsageMessage(player, "/setarmor [Part of name or PlayerID] [Armor]");
 	} 
 	else
 	{
@@ -370,7 +370,7 @@ bool CommandSetSkin(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/setskin [Part of name or PlayerID] [SkinID]\"");
+		ChatManager::UsageMessage(player, "/setskin [Part of name or PlayerID] [SkinID]");
 	}
 	else
 	{
@@ -390,7 +390,7 @@ bool CommandGoto(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 1)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/goto [Part of name or PlayerID]\"");
+		ChatManager::UsageMessage(player, "/goto [Part of name or PlayerID]");
 		ChatManager::SystemMessage(player, "places: taxi corp1 corp2 pd lsair sfair lvair pier underwater boat mafjump skyscraper coalminer");
 		ChatManager::SystemMessage(player, "chiliad drift wheelarch locolow transfender halfpipe bridgetop lombardstreet skatepark casino skydive");
 		ChatManager::SystemMessage(player, "smokespot fc lb eq boneyard process cropdust trucker hotel1 hotel2 hotel3");
@@ -570,7 +570,7 @@ bool CommandGetHere(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 1)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/gethere [Part of name or PlayerID]\"");
+		ChatManager::UsageMessage(player, "/gethere [Part of name or PlayerID]");
 	}
 	else
 	{
@@ -727,7 +727,7 @@ bool CommandFactionGiveRank(Player *player, string text, vector<string> params)
 	}
 	else if (params.size() != 2)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/giverank [Part of name or PlayerID] [Rank 1-6]\"");
+		ChatManager::UsageMessage(player, "/giverank [Part of name or PlayerID] [Rank 1-6]");
 	}
 	else
 	{
@@ -775,7 +775,7 @@ bool CommandFactionInvite(Player *player, string text, vector<string> params)
 	}
 	else if (params.size() != 1)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/invite [Part of name or PlayerID]\"");
+		ChatManager::UsageMessage(player, "/invite [Part of name or PlayerID]");
 	}
 	else
 	{
@@ -995,7 +995,7 @@ bool CommandMakeLeader(Player *player, string text, vector<string> params)
 {
 	if (params.size() != 2)
 	{
-		ChatManager::SystemMessage(player, "Usage: \"/makeleader [Part of name or PlayerID] [Faction]\"");
+		ChatManager::UsageMessage(player, "/makeleader [Part of name or PlayerID] [Faction]");
 	}
 	else
 	{
@@ -1033,7 +1033,7 @@ bool CommandSetWalkStyle(Player *player, string text, vector<string> params)
 		}
 		else
 		{
-			ChatManager::SystemMessage(player, "USAGE: /walk [1-8]");
+			ChatManager::UsageMessage(player, "/walk [1-8]");
 		}
 	}
 
@@ -1061,7 +1061,7 @@ bool CommandSetRunStyle(Player *player, string text, vector<string> params)
 		}
 		else
 		{
-			ChatManager::SystemMessage(player, "USAGE: /run [1-7]");
+			ChatManager::UsageMessage(player, "/run [1-7]");
 		}
 	}
 
