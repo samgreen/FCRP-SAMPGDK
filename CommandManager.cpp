@@ -60,6 +60,34 @@ bool CommandDo(Player *player, string text, vector<string> params)
 	return true;
 }
 
+bool CommandWhisper(Player *player, string text, vector<string> params);
+bool CommandWhisper(Player *player, string text, vector<string> params)
+{
+	if (params.empty())
+	{
+		ChatManager::UsageMessage(player, "/w(hisper) [Part of name or PlayerID] [text]");
+	}
+	else
+	{
+		Player *otherPlayer = CommandManager::GetPlayerFromParams(player, params, 0);
+		float distance = player->GetDistanceFromPoint(otherPlayer->GetPosition());
+		if (distance < 3.f || player->GetAdminLevel() > 0)
+		{
+			string playerMessage = "You whisper to " + otherPlayer->GetName() + "(" + to_string(otherPlayer->GetID()) + "): " + text;
+			SendClientMessage(player->GetID(), COLOR_HOTPINK, playerMessage.c_str());
+
+			string otherPlayerMessage = player->GetName() + "(" + to_string(player->GetID()) + ") whispers to you: " + text;
+			SendClientMessage(otherPlayer->GetID(), COLOR_HOTPINK, otherPlayerMessage.c_str());
+		}
+		else
+		{
+			ChatManager::SystemMessage(player, "You are too far away!");
+		}
+	}
+
+	return true;
+}
+
 bool CommandLocalOOC(Player *player, string text, vector<string> params);
 bool CommandLocalOOC(Player *player, string text, vector<string> params)
 {
@@ -193,13 +221,13 @@ bool CommandVeh(Player *player, string text, vector<string> params)
 			string color2String = params[2];
 
 			int carID = -1;
-			if (IsNumeric(params[0]))
+			if (IsNumeric(carIDString))
 			{
 				carID = stoi(carIDString);
 			}
 			else
 			{
-				carID = VehicleManager::GetVehicleIDFromName(params[0]);
+				carID = VehicleManager::GetVehicleIDFromName(carIDString);
 			}
 
 			if (carID != -1)
